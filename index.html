@@ -1,0 +1,619 @@
+<title>Invitation Rounds Tracker</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wdth,wght@12..96,75..100,400..800&family=Onest:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap">
+<style>
+:root{
+  --bg:#F3F5F7; --surface:#FFFFFF; --surface-2:#EDF1F4; --line:#DDE4EA; --line-2:#C9D3DB;
+  --ink:#0F1B26; --muted:#56656F; --faint:#8C99A4;
+  --accent:#0B5F73; --accent-ink:#FFFFFF; --accent-soft:#DDEEF1;
+  --gold:#C0831A; --gold-soft:#F6EBD2;
+  --pass:#0F1B26; --pass-2:#16283A; --pass-ink:#F2F5F7; --pass-muted:#9FB1BF;
+  --good:#1D7A4B; --good-soft:#DFF1E6; --warn:#9C6200; --warn-soft:#F8EACB; --bad:#A7362A; --bad-soft:#F7E0DB;
+  --shadow:0 1px 2px rgba(15,27,38,.05),0 8px 24px -12px rgba(15,27,38,.12);
+  --display:"Bricolage Grotesque","Arial Narrow",system-ui,sans-serif;
+  --body:"Onest",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+  --mono:"JetBrains Mono",ui-monospace,Menlo,Consolas,monospace;
+  --r:14px; --r-sm:9px;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    color-scheme:dark;
+    --bg:#0A1016; --surface:#111A22; --surface-2:#17222C; --line:#1F2C37; --line-2:#2B3B48;
+    --ink:#E7EDF2; --muted:#96A5B1; --faint:#65737F;
+    --accent:#5CBBCE; --accent-ink:#06222A; --accent-soft:#12303A;
+    --gold:#E7AE48; --gold-soft:#33260F;
+    --pass:#15222E; --pass-2:#1C2D3C; --pass-ink:#EEF3F6; --pass-muted:#93A7B6;
+    --good:#5BC58D; --good-soft:#12291C; --warn:#E7AE48; --warn-soft:#33260F; --bad:#EC7F71; --bad-soft:#341915;
+    --shadow:0 1px 2px rgba(0,0,0,.3),0 10px 30px -14px rgba(0,0,0,.6);
+  }
+}
+:root[data-theme="dark"]{
+  color-scheme:dark;
+  --bg:#0A1016; --surface:#111A22; --surface-2:#17222C; --line:#1F2C37; --line-2:#2B3B48;
+  --ink:#E7EDF2; --muted:#96A5B1; --faint:#65737F;
+  --accent:#5CBBCE; --accent-ink:#06222A; --accent-soft:#12303A;
+  --gold:#E7AE48; --gold-soft:#33260F;
+  --pass:#15222E; --pass-2:#1C2D3C; --pass-ink:#EEF3F6; --pass-muted:#93A7B6;
+  --good:#5BC58D; --good-soft:#12291C; --warn:#E7AE48; --warn-soft:#33260F; --bad:#EC7F71; --bad-soft:#341915;
+  --shadow:0 1px 2px rgba(0,0,0,.3),0 10px 30px -14px rgba(0,0,0,.6);
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{background:var(--bg);color:var(--ink);font:15px/1.6 var(--body);padding-inline:16px;padding-block:0 56px;-webkit-font-smoothing:antialiased}
+a{color:var(--accent);text-underline-offset:3px}
+h1,h2,h3{font-family:var(--display);text-wrap:balance;margin:0;letter-spacing:-.015em}
+.num,.mono{font-family:var(--mono);font-variant-numeric:tabular-nums}
+.eyebrow{font:600 11px/1 var(--body);letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:6px}
+
+/* ---------- shell ---------- */
+.shell{max-width:1240px;margin:0 auto;display:grid;grid-template-columns:232px minmax(0,1fr);gap:36px}
+aside.side{position:sticky;top:env(safe-area-inset-top,0px);align-self:start;height:100vh;padding-block:28px;display:flex;flex-direction:column;gap:28px}
+.logo{display:flex;align-items:center;gap:10px}
+.logo-mark{width:34px;height:34px;border-radius:9px;background:var(--pass);display:grid;place-items:center;flex:none}
+.logo-mark svg{width:20px;height:20px}
+.logo b{font:700 17px/1.1 var(--display);font-stretch:90%;display:block}
+.logo span{font-size:12px;color:var(--muted)}
+nav.menu{display:flex;flex-direction:column;gap:2px}
+nav.menu button{display:flex;align-items:center;gap:11px;font:500 14px var(--body);color:var(--muted);background:none;border:0;border-radius:var(--r-sm);padding:9px 12px;cursor:pointer;text-align:left;transition:background .15s,color .15s}
+nav.menu button svg{width:18px;height:18px;flex:none;stroke:currentColor;fill:none;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
+nav.menu button:hover{background:var(--surface-2);color:var(--ink)}
+nav.menu button[aria-selected="true"]{background:var(--surface);color:var(--ink);box-shadow:var(--shadow);font-weight:600}
+nav.menu button[aria-selected="true"] svg{stroke:var(--gold)}
+.side-foot{margin-top:auto;font-size:12px;color:var(--muted);display:grid;gap:6px;border-top:1px solid var(--line);padding-top:16px}
+.live{display:inline-flex;align-items:center;gap:7px;font-weight:600;color:var(--ink)}
+.live::before{content:"";width:7px;height:7px;border-radius:50%;background:var(--good);box-shadow:0 0 0 3px var(--good-soft)}
+
+main{min-width:0;padding-block:28px}
+.page-head{display:flex;justify-content:space-between;align-items:flex-end;gap:16px;flex-wrap:wrap;margin-bottom:22px}
+.page-head h1{font-size:clamp(28px,4vw,40px);font-weight:700;font-stretch:88%;line-height:1.05}
+.page-head p{margin:6px 0 0;color:var(--muted);max-width:60ch}
+
+/* mobile top bar */
+.mtop{display:none}
+@media (max-width:980px){
+  .shell{grid-template-columns:1fr;gap:0}
+  aside.side{display:none}
+  .mtop{display:block;position:sticky;top:env(safe-area-inset-top,0px);z-index:10;background:color-mix(in srgb,var(--bg) 92%,transparent);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);margin-inline:-16px;padding:12px 16px 10px;border-bottom:1px solid var(--line)}
+  .mtop .row{display:flex;justify-content:space-between;align-items:center;gap:10px}
+  .seg{display:flex;gap:6px;overflow-x:auto;margin-top:10px;scrollbar-width:none;margin-inline:-16px;padding-inline:16px}
+  .seg::-webkit-scrollbar{display:none}
+  .seg button{flex:none;font:600 13px var(--body);color:var(--muted);background:var(--surface);border:1px solid var(--line);border-radius:99px;padding:7px 13px;cursor:pointer}
+  .seg button[aria-selected="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+  main{padding-block:20px}
+}
+
+section.panel{display:grid;gap:18px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:22px;box-shadow:var(--shadow)}
+.card-h{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;margin-bottom:16px;flex-wrap:wrap}
+.card h2{font-size:19px;font-weight:650;font-stretch:92%;line-height:1.2}
+.card .sub{color:var(--muted);font-size:13.5px;margin:4px 0 0;max-width:62ch}
+.grid2{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,1fr);gap:18px}
+@media (max-width:760px){.grid2{grid-template-columns:1fr}.card{padding:18px}}
+
+/* ---------- boarding pass hero ---------- */
+.pass{display:grid;grid-template-columns:minmax(0,1fr) 190px;background:var(--pass);color:var(--pass-ink);border-radius:18px;position:relative;overflow:hidden;box-shadow:var(--shadow)}
+.pass::after{content:"";position:absolute;inset:0;background:radial-gradient(120% 90% at 0% 0%,color-mix(in srgb,var(--gold) 14%,transparent),transparent 55%);pointer-events:none}
+.pass-main{padding:26px 28px;display:flex;flex-direction:column;gap:14px;position:relative;z-index:1}
+.pass-top{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}
+.pass .eyebrow{color:var(--pass-muted)}
+.route{display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+.route .code{font:800 clamp(34px,6vw,54px)/1 var(--display);font-stretch:78%;letter-spacing:-.01em}
+.route .arrow{flex:1;min-width:40px;height:2px;background:repeating-linear-gradient(90deg,var(--pass-muted) 0 6px,transparent 6px 11px);position:relative}
+.route .arrow::after{content:"";position:absolute;right:-2px;top:-4px;border-left:8px solid var(--gold);border-top:5px solid transparent;border-bottom:5px solid transparent}
+.count{display:flex;align-items:baseline;gap:10px}
+.count .n{font:700 clamp(56px,11vw,96px)/.85 var(--display);font-stretch:75%;color:var(--gold);font-variant-numeric:tabular-nums;letter-spacing:-.03em}
+.count .u{font:600 15px var(--body);color:var(--pass-ink)}
+.pass p{margin:0;font-size:14px;color:var(--pass-muted);max-width:52ch}
+.pass-fields{display:grid;grid-template-columns:repeat(4,auto);gap:10px 26px;justify-content:start;border-top:1px solid color-mix(in srgb,var(--pass-muted) 25%,transparent);padding-top:14px}
+.pass-fields div{display:grid;gap:3px}
+.pass-fields b{font:600 15px var(--mono)}
+.badge{font:600 12px var(--body);background:var(--gold);color:#1B1203;border-radius:99px;padding:4px 11px}
+.stub{background:var(--pass-2);border-left:2px dashed color-mix(in srgb,var(--pass-muted) 45%,transparent);padding:24px 20px;display:flex;flex-direction:column;justify-content:space-between;gap:14px;position:relative;z-index:1}
+.stub::before,.stub::after{content:"";position:absolute;left:-12px;width:22px;height:22px;border-radius:50%;background:var(--bg)}
+.stub::before{top:-11px}.stub::after{bottom:-11px}
+.stub .big{font:800 44px/1 var(--display);font-stretch:75%}
+.barcode{height:54px;border-radius:3px;background:repeating-linear-gradient(90deg,var(--pass-ink) 0 2px,transparent 2px 4px,var(--pass-ink) 4px 5px,transparent 5px 8px,var(--pass-ink) 8px 11px,transparent 11px 13px);opacity:.85}
+@media (max-width:640px){
+  .pass{grid-template-columns:1fr}
+  .stub{border-left:0;border-top:2px dashed color-mix(in srgb,var(--pass-muted) 45%,transparent);flex-direction:row;align-items:center}
+  .stub::before,.stub::after{top:-12px;left:auto}
+  .stub::before{left:-11px}.stub::after{right:-11px;bottom:auto}
+  .barcode{flex:1;height:40px}
+  .pass-main{padding:22px 20px}
+  .pass-fields{grid-template-columns:1fr 1fr}
+}
+
+/* ---------- KPI strip ---------- */
+.kpis{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px}
+.kpi{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:16px 18px}
+.kpi .v{font:700 30px/1.05 var(--display);font-stretch:82%;margin-top:8px;font-variant-numeric:tabular-nums}
+.kpi .d{font-size:12.5px;color:var(--muted);margin-top:2px}
+.delta{font:600 12px var(--mono);border-radius:6px;padding:1px 6px;margin-left:6px;vertical-align:4px}
+.delta.up{background:var(--good-soft);color:var(--good)}.delta.down{background:var(--bad-soft);color:var(--bad)}
+@media (max-width:760px){.kpis{grid-template-columns:1fr 1fr}}
+
+/* ---------- checker ---------- */
+.checker{display:grid;gap:14px}
+.field{display:grid;gap:6px}
+.field label{font-size:12.5px;color:var(--muted);font-weight:600}
+select,input[type=search]{font:15px var(--body);color:var(--ink);background:var(--bg);border:1px solid var(--line-2);border-radius:var(--r-sm);padding:11px 12px;width:100%;min-width:0;appearance:none}
+select{background-image:linear-gradient(45deg,transparent 50%,var(--muted) 50%),linear-gradient(135deg,var(--muted) 50%,transparent 50%);background-position:calc(100% - 18px) 55%,calc(100% - 13px) 55%;background-size:5px 5px;background-repeat:no-repeat;padding-right:34px}
+.stepper{display:flex;align-items:stretch;border:1px solid var(--line-2);border-radius:var(--r-sm);overflow:hidden;background:var(--bg)}
+.stepper button{width:48px;font:600 20px var(--body);border:0;background:var(--surface-2);color:var(--ink);cursor:pointer}
+.stepper output{flex:1;display:grid;place-items:center;font:700 26px var(--display);font-stretch:85%;font-variant-numeric:tabular-nums;padding:6px}
+.quick{display:flex;gap:6px;flex-wrap:wrap}
+.meter{position:relative;height:10px;border-radius:99px;background:var(--surface-2);margin-top:6px}
+.meter .fill{position:absolute;inset:0 auto 0 0;border-radius:99px;background:var(--accent);transition:width .25s}
+.meter .tick{position:absolute;top:-5px;bottom:-5px;width:2px;background:var(--ink);border-radius:2px}
+.meter-l{display:flex;justify-content:space-between;font:500 11px var(--mono);color:var(--faint);margin-top:6px}
+.verdict{border-radius:var(--r-sm);padding:14px 16px;display:grid;gap:3px;border:1px solid}
+.verdict.good{background:var(--good-soft);border-color:color-mix(in srgb,var(--good) 35%,transparent)}
+.verdict.warn{background:var(--warn-soft);border-color:color-mix(in srgb,var(--warn) 35%,transparent)}
+.verdict.bad{background:var(--bad-soft);border-color:color-mix(in srgb,var(--bad) 35%,transparent)}
+.verdict strong{font:650 17px var(--display);font-stretch:92%}
+.verdict.good strong{color:var(--good)}.verdict.warn strong{color:var(--warn)}.verdict.bad strong{color:var(--bad)}
+.verdict p{margin:0;font-size:14px}
+
+/* chips */
+.chips{display:flex;gap:6px;flex-wrap:wrap}
+.chip{font:600 12.5px var(--body);border:1px solid var(--line-2);background:var(--surface);color:var(--muted);border-radius:99px;padding:6px 12px;cursor:pointer;transition:all .15s}
+.chip:hover{color:var(--ink);border-color:var(--faint)}
+.chip[aria-pressed="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.chip .mono{font-size:11px;opacity:.7;margin-left:3px}
+.link-btn{font:600 13px var(--body);color:var(--accent);background:none;border:0;padding:0;cursor:pointer}
+
+/* charts */
+.chart{width:100%;height:auto;display:block;overflow:visible}
+.chart text{fill:var(--muted);font:500 11px var(--mono)}
+.chart .grid{stroke:var(--line);stroke-width:1}
+.chart .axis{stroke:var(--line-2)}
+.chart .bar{fill:var(--accent)}
+.chart .bar.hi{fill:var(--gold)}
+.chart .bar.old{fill:var(--line-2)}
+.chart .ghost{fill:color-mix(in srgb,var(--gold) 10%,transparent);stroke:var(--gold);stroke-dasharray:5 4;stroke-width:1.5}
+.chart .val{fill:var(--ink);font-weight:600}
+.chart .lab{fill:var(--ink);font:600 12.5px var(--body)}
+.legend{display:flex;gap:16px;flex-wrap:wrap;font-size:12.5px;color:var(--muted);margin-top:10px}
+.legend i{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:6px;vertical-align:-1px}
+
+/* occupations list */
+.toolbar{display:grid;grid-template-columns:minmax(0,1fr) 220px;gap:10px;margin-bottom:12px}
+@media (max-width:560px){.toolbar{grid-template-columns:1fr}}
+.search{position:relative}
+.search svg{position:absolute;left:12px;top:50%;width:17px;height:17px;transform:translateY(-50%);stroke:var(--faint);fill:none;stroke-width:2}
+.search input{padding-left:38px}
+.occ-list{border:1px solid var(--line);border-radius:var(--r-sm);overflow:hidden;margin-top:14px}
+.occ-head,.occ-row{display:grid;grid-template-columns:minmax(0,1fr) 190px 88px;gap:12px;align-items:center;padding:11px 16px}
+.occ-head{background:var(--surface-2);font:600 11px var(--body);letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+.occ-row{border-top:1px solid var(--line);font-size:14.5px}
+.occ-row:hover{background:var(--surface-2)}
+.occ-row .g{font-size:12.5px;color:var(--muted)}
+.occ-row .g i{display:inline-block;width:7px;height:7px;border-radius:50%;margin-right:7px;vertical-align:1px}
+.occ-row .p{text-align:right}
+.occ-scroll{max-height:560px;overflow-y:auto}
+@media (max-width:640px){
+  .occ-head{display:none}
+  .occ-row{grid-template-columns:minmax(0,1fr) auto;gap:2px 12px;padding:12px 14px}
+  .occ-row .g{grid-row:2;grid-column:1}
+  .occ-row .p{grid-row:1/3;grid-column:2}
+}
+.pts{display:inline-block;min-width:46px;text-align:center;font:600 13px var(--mono);border-radius:7px;padding:3px 8px}
+.p65{background:var(--good-soft);color:var(--good)}
+.p75{background:var(--accent-soft);color:var(--accent)}
+.p85{background:var(--warn-soft);color:var(--warn)}
+.p95{background:var(--bad-soft);color:var(--bad)}
+.foot-note{font-size:12.5px;color:var(--muted);margin:12px 0 0}
+.callout{display:flex;gap:12px;align-items:flex-start;background:var(--surface-2);border-radius:var(--r-sm);padding:14px 16px;font-size:13.5px;margin-top:14px}
+.callout svg{flex:none;width:18px;height:18px;stroke:var(--gold);fill:none;stroke-width:2;margin-top:2px}
+
+/* rounds table */
+.tbl{overflow-x:auto;border:1px solid var(--line);border-radius:var(--r-sm)}
+table{width:100%;border-collapse:collapse;font-size:14px;min-width:620px}
+th{text-align:left;font:600 11px var(--body);letter-spacing:.1em;text-transform:uppercase;color:var(--muted);background:var(--surface-2);padding:11px 14px;white-space:nowrap}
+td{padding:12px 14px;border-top:1px solid var(--line);white-space:nowrap}
+td:first-child{font-weight:600}
+tr.next td{background:color-mix(in srgb,var(--gold) 8%,transparent)}
+.np{color:var(--faint);font-style:italic;font-weight:400!important}
+.steps{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
+.step{border-top:2px solid var(--gold);padding-top:12px}
+.step b{font:650 15px var(--display);display:block;margin-bottom:4px}
+.step p{margin:0;font-size:13.5px;color:var(--muted)}
+@media (max-width:700px){.steps{grid-template-columns:1fr}}
+
+/* states */
+.states{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px}
+.state{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:18px;display:flex;flex-direction:column;gap:8px;box-shadow:var(--shadow)}
+.state .top{display:flex;justify-content:space-between;align-items:center;gap:8px}
+.state .code{font:800 30px/1 var(--display);font-stretch:75%}
+.state .name{font-size:12.5px;color:var(--muted)}
+.status{font:600 11px var(--body);letter-spacing:.06em;text-transform:uppercase;border-radius:99px;padding:4px 9px;display:inline-flex;align-items:center;gap:6px}
+.status::before{content:"";width:6px;height:6px;border-radius:50%;background:currentColor}
+.status.open{background:var(--good-soft);color:var(--good)}
+.status.pending{background:var(--warn-soft);color:var(--warn)}
+.state p{margin:0;font-size:13.5px;color:var(--muted);flex:1}
+.state a{font-size:13px;font-weight:600;text-decoration:none}
+.state a::after{content:" ↗"}
+@media (max-width:1100px){.states{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media (max-width:460px){.states{grid-template-columns:1fr}}
+
+/* feed */
+.feed{display:grid}
+.item{display:grid;grid-template-columns:92px minmax(0,1fr);gap:16px;padding:16px 0;border-top:1px solid var(--line)}
+.item:first-child{border-top:0;padding-top:4px}
+.item time{font:500 12px/1.4 var(--mono);color:var(--muted);padding-top:3px}
+.item time b{display:block;font:700 22px/1 var(--display);font-stretch:80%;color:var(--ink)}
+.item h3{font-size:16.5px;font-weight:650;font-stretch:94%;line-height:1.3;margin-bottom:5px;display:flex;gap:8px;align-items:baseline;flex-wrap:wrap}
+.item p{margin:0;font-size:14px;color:var(--muted);max-width:70ch}
+.tag{font:600 11px var(--body);border-radius:5px;padding:2px 7px;background:var(--surface-2);color:var(--muted)}
+.tag.key{background:var(--gold-soft);color:var(--gold)}
+.item .src{font-size:12.5px;margin-top:8px;display:inline-block;font-weight:600;text-decoration:none}
+.item .src::after{content:" ↗"}
+.mini .item{grid-template-columns:62px minmax(0,1fr);gap:12px}
+.mini .item time b{font-size:20px}
+@media (max-width:520px){.item{grid-template-columns:58px minmax(0,1fr);gap:12px}}
+
+footer{margin-top:36px;padding-top:18px;border-top:1px solid var(--line);font-size:12.5px;color:var(--muted);display:grid;gap:8px}
+footer ul{margin:0;padding-left:18px;display:grid;gap:3px}
+
+@media (prefers-reduced-motion:no-preference){
+  section.panel:not([hidden]){animation:fade .3s ease-out}
+  @keyframes fade{from{transform:translateY(6px)}to{transform:none}}
+}
+</style>
+
+<div class="shell">
+  <aside class="side">
+    <div class="logo">
+      <div class="logo-mark"><svg viewBox="0 0 24 24" fill="none" stroke="#E7AE48" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12h13"/><path d="m12 7 5 5-5 5"/><path d="M20 4v16"/></svg></div>
+      <div><b>Invitation Rounds</b><span>SkillSelect tracker</span></div>
+    </div>
+    <nav class="menu" role="tablist" aria-label="Sections" id="menu"></nav>
+    <div class="side-foot">
+      <span class="live">Data checked 29 Sep 2026</span>
+      <span>Refreshes every Monday</span>
+    </div>
+  </aside>
+
+  <main>
+    <div class="mtop">
+      <div class="row">
+        <div class="logo">
+          <div class="logo-mark"><svg viewBox="0 0 24 24" fill="none" stroke="#E7AE48" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12h13"/><path d="m12 7 5 5-5 5"/><path d="M20 4v16"/></svg></div>
+          <div><b>Invitation Rounds</b><span>Checked 29 Sep 2026</span></div>
+        </div>
+      </div>
+      <div class="seg" role="tablist" aria-label="Sections" id="seg"></div>
+    </div>
+
+    <!-- OVERVIEW -->
+    <section class="panel" id="overview" role="tabpanel">
+      <div class="page-head">
+        <div><div class="eyebrow">Overview</div><h1>Where SkillSelect stands today</h1></div>
+      </div>
+
+      <div class="pass">
+        <div class="pass-main">
+          <div class="pass-top"><span class="eyebrow">Next invitation round · Subclass 189</span><span class="badge">Expected by 30 Sep 2026</span></div>
+          <div class="route"><span class="code">EOI</span><span class="arrow" aria-hidden="true"></span><span class="code">ITA</span></div>
+          <div class="count"><span class="n" id="cd-n">—</span><span class="u" id="cd-u">days to go</span></div>
+          <p id="cd-text">First round of the 2026–27 program year. The Department confirms rounds only after they run, so keep your EOI details current.</p>
+          <div class="pass-fields">
+            <div><span class="eyebrow">Last round</span><b>04 JUN 26</b></div>
+            <div><span class="eyebrow">Invited</span><b>10,000</b></div>
+            <div><span class="eyebrow">Cut-offs</span><b>65–100</b></div>
+            <div><span class="eyebrow">Tie-break</span><b>24 APR 26</b></div>
+          </div>
+        </div>
+        <div class="stub">
+          <div><span class="eyebrow">Program year</span><div class="big">26–27</div></div>
+          <div><span class="eyebrow">189 places</span><div class="big" style="font-size:32px">21,090</div></div>
+          <div class="barcode" aria-hidden="true"></div>
+        </div>
+      </div>
+
+      <div class="grid2">
+        <div class="card">
+          <div class="card-h"><div><h2>Check your score</h2><p class="sub">Compared with your occupation's cut-off in the 4 June 2026 round.</p></div></div>
+          <form class="checker" id="checker">
+            <div class="field"><label for="ck-occ">Nominated occupation</label><select id="ck-occ"></select></div>
+            <div class="quick" id="quick"></div>
+            <div class="field"><label id="pts-l">Your EOI points</label>
+              <div class="stepper" role="group" aria-labelledby="pts-l">
+                <button type="button" id="minus" aria-label="Decrease by 5">−</button>
+                <output id="pts" aria-live="polite">85</output>
+                <button type="button" id="plus" aria-label="Increase by 5">+</button>
+              </div>
+              <div class="meter" aria-hidden="true"><div class="fill" id="m-fill"></div><div class="tick" id="m-tick"></div></div>
+              <div class="meter-l"><span>65</span><span id="m-lab">cut-off</span><span>120</span></div>
+            </div>
+            <div id="verdict" aria-live="polite"></div>
+          </form>
+        </div>
+        <div class="card">
+          <div class="card-h"><div><h2>Where cut-offs landed</h2><p class="sub">Occupations invited at each minimum score, 4 June 2026.</p></div></div>
+          <svg class="chart" id="histo" viewBox="0 0 420 230" role="img" aria-label="Number of occupations invited at each minimum points score"></svg>
+          <div class="legend"><span><i style="background:var(--gold)"></i>Most common cut-off</span><span><i style="background:var(--accent)"></i>Other scores</span></div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-h"><div><h2>Latest from Home Affairs</h2><p class="sub">Changes that affect skilled applicants right now.</p></div><button class="link-btn" type="button" data-go="news">All updates →</button></div>
+        <div class="feed mini" id="feed-mini"></div>
+      </div>
+    </section>
+
+    <!-- OCCUPATIONS -->
+    <section class="panel" id="occupations" role="tabpanel" hidden>
+      <div class="page-head"><div><div class="eyebrow">Round of 4 June 2026</div><h1>Occupation cut-offs</h1><p>Minimum points invited per occupation for the subclass 189. Occupations missing from this list received no invitations.</p></div></div>
+      <div class="card">
+        <div class="toolbar">
+          <div class="search"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m20 20-4-4"/></svg><input id="q" type="search" placeholder="Search, e.g. nurse, engineer, tiler" aria-label="Search occupations"></div>
+          <select id="sort" aria-label="Sort by"><option value="pts-asc">Lowest cut-off first</option><option value="pts-desc">Highest cut-off first</option><option value="az">A–Z</option></select>
+        </div>
+        <div class="chips" id="chips"></div>
+        <div class="occ-list">
+          <div class="occ-head"><span>Occupation</span><span>Sector</span><span style="text-align:right">Min points</span></div>
+          <div class="occ-scroll" id="occ-body"></div>
+        </div>
+        <p class="foot-note" id="occ-count"></p>
+        <div class="callout"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 8v5M12 16.5v.5"/></svg><span>ICT roles such as Software Engineer, Developer Programmer and ICT Business Analyst received no 189 invitations in this round. Multimedia Specialist and both telecommunications engineering occupations were invited at 95.</span></div>
+      </div>
+    </section>
+
+    <!-- ROUNDS -->
+    <section class="panel" id="rounds" role="tabpanel" hidden>
+      <div class="page-head"><div><div class="eyebrow">History</div><h1>Round history</h1><p>Since 2025–26 the Department runs a few large rounds a year instead of monthly draws.</p></div></div>
+      <div class="card">
+        <div class="card-h"><div><h2>Subclass 189 invitations per round</h2><p class="sub">The dashed bar is the round expected by 30 September 2026.</p></div></div>
+        <svg class="chart" id="rounds-chart" viewBox="0 0 560 250" role="img" aria-label="Invitations per round"></svg>
+      </div>
+      <div class="card">
+        <div class="card-h"><div><h2>Round log</h2></div></div>
+        <div class="tbl"><table>
+          <thead><tr><th>Round</th><th>Program year</th><th>189 invited</th><th>491 family</th><th>Min points</th><th>Tie-break</th></tr></thead>
+          <tbody>
+            <tr class="next"><td>By 30 Sep 2026</td><td>2026–27</td><td class="np">pending</td><td class="np">pending</td><td class="np">pending</td><td class="np">pending</td></tr>
+            <tr><td>4 Jun 2026</td><td>2025–26</td><td class="num">10,000</td><td class="np">not published</td><td class="num">65–100</td><td class="num">24 Apr 2026</td></tr>
+            <tr><td>13 Nov 2025</td><td>2025–26</td><td class="np">not published</td><td class="num">—</td><td class="num">65–100</td><td class="np">—</td></tr>
+            <tr><td>21 Aug 2025</td><td>2025–26</td><td class="num">6,887</td><td class="num">150</td><td class="num">65–110</td><td class="np">—</td></tr>
+            <tr><td>7 Nov 2024</td><td>2024–25</td><td class="num">15,000</td><td class="num">0</td><td class="num">65</td><td class="np">—</td></tr>
+          </tbody>
+        </table></div>
+        <p class="foot-note">Some trackers report 10,000 invitations for 13 November 2025. The Department's own total for that round isn't confirmed here, so it shows as not published.</p>
+      </div>
+      <div class="card">
+        <div class="card-h"><div><h2>How a round picks EOIs</h2></div></div>
+        <div class="steps">
+          <div class="step"><b>Ranked by points</b><p>Within each occupation, the highest scores are invited first until the round quota or occupation ceiling is reached.</p></div>
+          <div class="step"><b>Ties go to the earliest</b><p>At the cut-off score, the EOI with the earlier date of effect is invited first.</p></div>
+          <div class="step"><b>60 days to lodge</b><p>An invitation gives you 60 days to apply. An EOI stays active for two years.</p></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- PROGRAM -->
+    <section class="panel" id="program" role="tabpanel" hidden>
+      <div class="page-head"><div><div class="eyebrow">Migration Program</div><h1>2026–27 planning levels</h1><p>Announced in the May 2026 Budget. The total held at 185,000 while places shifted between visa types.</p></div></div>
+      <div class="kpis">
+        <div class="kpi"><div class="eyebrow">Total program</div><div class="v">185,000</div><div class="d">permanent places, unchanged</div></div>
+        <div class="kpi"><div class="eyebrow">Skill stream</div><div class="v">132,240</div><div class="d">over 70% of places</div></div>
+        <div class="kpi"><div class="eyebrow">189 places</div><div class="v">21,090<span class="delta up">+25%</span></div><div class="d">up from 16,900</div></div>
+        <div class="kpi"><div class="eyebrow">Onshore reserved</div><div class="v">129,590</div><div class="d">for people already here</div></div>
+      </div>
+      <div class="card">
+        <div class="card-h"><div><h2>Skill stream places, year on year</h2><p class="sub">Regional provisional places were cut hardest. 189, 190 and employer-sponsored places grew.</p></div></div>
+        <svg class="chart" id="prog-chart" viewBox="0 0 560 280" role="img" aria-label="Planning levels comparison"></svg>
+        <div class="legend"><span><i style="background:var(--line-2)"></i>2025–26</span><span><i style="background:var(--accent)"></i>2026–27</span></div>
+      </div>
+      <div class="card">
+        <div class="card-h"><div><h2>What this means for your EOI</h2></div></div>
+        <div class="steps">
+          <div class="step"><b>Bigger 189 rounds</b><p>A 25% larger allocation should mean more invitations across 2026–27 and some easing of cut-offs.</p></div>
+          <div class="step"><b>Tougher 190 competition</b><p>With 491 places down by more than half, regional applicants are likely to redirect to state nomination.</p></div>
+          <div class="step"><b>Points test reform</b><p>Trade qualifications gain degree-level points. The broader rewrite isn't expected before mid-2027.</p></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- STATES -->
+    <section class="panel" id="states" role="tabpanel" hidden>
+      <div class="page-head"><div><div class="eyebrow">190 &amp; 491</div><h1>State nomination</h1><p>Runs separately from SkillSelect rounds. Nationally, 190 places rose to 35,500. Statuses last verified late August to mid September 2026 and can change without notice.</p></div></div>
+      <div class="states" id="state-grid"></div>
+    </section>
+
+    <!-- NEWS -->
+    <section class="panel" id="news" role="tabpanel" hidden>
+      <div class="page-head"><div><div class="eyebrow">Newest first</div><h1>Home Affairs updates</h1><p>Gold tags mark changes that affect skilled visa applicants directly.</p></div></div>
+      <div class="card">
+        <div class="chips" id="news-chips" style="margin-bottom:10px"></div>
+        <div class="feed" id="feed"></div>
+      </div>
+    </section>
+
+    <footer>
+      <p>General information compiled from Department of Home Affairs pages and migration-agent round trackers. It is not migration advice. Check the official SkillSelect pages and a registered migration agent before making decisions.</p>
+      <ul>
+        <li><a href="https://immi.homeaffairs.gov.au/visas/working-in-australia/skillselect/invitation-rounds">SkillSelect invitation rounds (Home Affairs)</a></li>
+        <li><a href="https://immi.homeaffairs.gov.au/visas/getting-a-visa/visa-processing-times/visa-processing-priorities/skilled-visa">Skilled visa processing priorities (Home Affairs)</a></li>
+        <li><a href="https://immi.homeaffairs.gov.au/what-we-do/state-and-territory-nomination-allocations">State and territory nomination allocations (Home Affairs)</a></li>
+        <li><a href="https://www.widen.com.au/invitation-rounds/">WIDEN round tracker</a> · <a href="https://www.y-axis.com/news/australia-skillselect-10000-invitations-june-2026/">June 2026 occupation list (Y-Axis)</a> · <a href="https://www.studynash.co/blog/2026-27-migration-program-planning-levels">2026–27 planning levels (Studynash)</a></li>
+      </ul>
+    </footer>
+  </main>
+</div>
+
+<script>
+(function(){
+const RAW="Actuary|90;Agricultural Consultant|80;Agricultural Scientist|80;Airconditioning and Mechanical Services Plumber|65;Airconditioning and Refrigeration Mechanic|80;Architect|85;Arts Administrator or Manager|80;Audiologist|75;Automotive Electrician|80;Barrister|80;Biotechnologist|95;Boat Builder and Repairer|80;Bricklayer|65;Cabinetmaker|80;Cardiologist|80;Carpenter|65;Carpenter and Joiner|65;Cartographer|85;Chemist|85;Child Care Centre Manager|80;Chiropractor|80;Clinical Psychologist|75;Construction Project Manager|80;Dancer or Choreographer|80;Dermatologist|85;Diagnostic and Interventional Radiologist|85;Drainer|65;Economist|80;Electrical Engineering Draftsperson|80;Electrical Engineering Technician|80;Electrician (General)|65;Electrician (Special Class)|65;Electronic Equipment Trades Worker|80;Electronic Instrument Trades Worker (General)|80;Electronic Instrument Trades Worker (Special Class)|80;Electronics Engineer|95;Emergency Medicine Specialist|75;Endocrinologist|80;Engineering Manager|80;Environmental Consultant|80;Environmental Manager|80;Environmental Research Scientist|80;Environmental Scientists nec|80;Fibrous Plasterer|65;Fitter (General)|80;Fitter and Turner|80;Food Technologist|85;Footballer|80;Forester|80;Gasfitter|70;Gastroenterologist|85;General Practitioner|75;Geophysicist|80;Glazier|65;Hydrogeologist|80;Intensive Care Specialist|80;Joiner|65;Land Economist|80;Landscape Architect|85;Life Scientist (General)|95;Life Scientists nec|95;Lift Mechanic|80;Management Consultant|80;Marine Biologist|95;Medical Diagnostic Radiographer|80;Medical Laboratory Scientist|80;Medical Practitioners nec|75;Medical Radiation Therapist|80;Metal Fabricator|80;Metal Machinist (First Class)|85;Metallurgist|80;Meteorologist|85;Microbiologist|95;Midwife|75;Mining Engineer (excluding Petroleum)|80;Multimedia Specialist|95;Music Director|80;Musician (Instrumental)|80;Natural and Physical Science Professionals nec|80;Nuclear Medicine Technologist|80;Nurse Practitioner|80;Obstetrician and Gynaecologist|85;Occupational Therapist|75;Ophthalmologist|80;Optometrist|80;Organisational Psychologist|80;Orthopaedic Surgeon|85;Orthotist or Prosthetist|80;Osteopath|80;Other Spatial Scientist|80;Paediatrician|75;Panelbeater|80;Petroleum Engineer|80;Physicist|80;Physiotherapist|75;Plumber (General)|65;Podiatrist|75;Primary Health Organisation Manager|80;Psychiatrist|80;Psychologists nec|75;Registered Nurse (Aged Care)|75;Registered Nurse (Child and Family Health)|80;Registered Nurse (Community Health)|75;Registered Nurse (Critical Care and Emergency)|75;Registered Nurse (Developmental Disability)|80;Registered Nurse (Disability and Rehabilitation)|80;Registered Nurse (Medical Practice)|75;Registered Nurse (Medical)|75;Registered Nurse (Mental Health)|75;Registered Nurse (Paediatrics)|80;Registered Nurse (Perioperative)|75;Registered Nurse (Surgical)|75;Registered Nurses nec|75;Roof Plumber|65;Secondary School Teacher|75;Sheetmetal Trades Worker|80;Shipwright|80;Social Worker|75;Solicitor|80;Solid Plasterer|65;Sonographer|85;Special Education Teachers nec|85;Special Needs Teacher|75;Specialist Physician (General Medicine)|80;Specialist Physicians nec|80;Speech Pathologist|75;Statistician|90;Stonemason|65;Surgeon (General)|85;Surveyor|80;Telecommunications Engineer|95;Telecommunications Network Engineer|95;Tennis Coach|80;Thoracic Medicine Specialist|95;Urologist|100;Valuer|80;Veterinarian|80;Wall and Floor Tiler|65;Welder (First Class)|80;Welfare Centre Manager|85";
+const RX=[
+ ["Trades",/Plumber|Electrician|Carpenter|Joiner|Bricklayer|Drainer|Plasterer|Glazier|Stonemason|Tiler|Gasfitter|Mechanic|Fitter|Welder|Metal|Sheetmetal|Panelbeater|Cabinetmaker|Boat|Shipwright|Trades Worker/],
+ ["Health",/Nurse|Midwife|Medic|Physician|Surgeon|Practitioner|Cardiolog|Dermatolog|Radiolog|Gastro|Endocrin|Urolog|Ophthalm|Paediatric|Psychiatr|Obstetric|Intensive|Thoracic|Audiolog|Chiropract|Osteopath|Optometr|Orthotist|Physiotherap|Podiatr|Occupational Therap|Speech|Sonograph|Radiograph|Radiation|Nuclear|Psycholog|Primary Health|Veterinar/],
+ ["Education & community",/Teacher|Social Worker|Child Care|Welfare/],
+ ["Engineering & science",/Engineer|Scient|Chemist|Physicist|Biolog|Geophys|Hydrogeo|Metallurg|Meteorolog|Biotech|Agricultural|Forester|Food Tech|Surveyor|Cartograph|Environmental|Draftsperson|Technician|Architect|Statistician|Actuary|Multimedia/]
+];
+const GCOL={"Trades":"var(--good)","Health":"var(--accent)","Education & community":"var(--gold)","Engineering & science":"var(--bad)","Professional & other":"var(--faint)"};
+const OCC=RAW.split(";").map(s=>{const[n,p]=s.split("|");const g=(RX.find(r=>r[1].test(n))||["Professional & other"])[0];return{n,p:+p,g}});
+const GROUPS=["All","Trades","Health","Engineering & science","Education & community","Professional & other"];
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const pillCls=p=>p<=70?"p65":p<=80?"p75":p<=90?"p85":"p95";
+
+/* nav */
+const I={
+ overview:'<path d="M4 13h6V4H4zM14 20h6v-9h-6zM4 20h6v-4H4zM14 4v4h6V4z"/>',
+ occupations:'<path d="M4 6h16M4 12h16M4 18h10"/>',
+ rounds:'<path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/>',
+ program:'<circle cx="12" cy="12" r="8"/><path d="M12 4v8l6 4"/>',
+ states:'<path d="M12 21s-7-6.1-7-11a7 7 0 0 1 14 0c0 4.9-7 11-7 11z"/><circle cx="12" cy="10" r="2.5"/>',
+ news:'<path d="M5 4h11a3 3 0 0 1 3 3v13H8a3 3 0 0 1-3-3z"/><path d="M9 9h6M9 13h6"/>'
+};
+const TABS=[["overview","Overview"],["occupations","Occupation cut-offs"],["rounds","Round history"],["program","2026–27 program"],["states","State nomination"],["news","Home Affairs updates"]];
+document.getElementById('menu').innerHTML=TABS.map(([id,l])=>`<button role="tab" data-p="${id}" aria-selected="false"><svg viewBox="0 0 24 24">${I[id]}</svg>${l}</button>`).join('');
+document.getElementById('seg').innerHTML=TABS.map(([id,l])=>`<button role="tab" data-p="${id}" aria-selected="false">${l}</button>`).join('');
+const btns=[...document.querySelectorAll('[role=tab]')];
+function show(id,scroll){
+  btns.forEach(b=>b.setAttribute('aria-selected',b.dataset.p===id));
+  document.querySelectorAll('section.panel').forEach(s=>s.hidden=s.id!==id);
+  try{localStorage.setItem('ir-tab',id)}catch(e){}
+  if(scroll)window.scrollTo({top:0});
+  const sb=document.querySelector(`#seg [data-p="${id}"]`);if(sb&&sb.scrollIntoView)sb.scrollIntoView({block:'nearest',inline:'center'});
+}
+btns.forEach(b=>b.addEventListener('click',()=>show(b.dataset.p,true)));
+document.querySelectorAll('[data-go]').forEach(b=>b.addEventListener('click',()=>show(b.dataset.go,true)));
+let start=location.hash.slice(1);
+if(!TABS.some(t=>t[0]===start)){try{start=localStorage.getItem('ir-tab')}catch(e){start=null}}
+show(TABS.some(t=>t[0]===start)?start:'overview',false);
+
+/* countdown */
+(function(){
+  const days=Math.ceil((new Date('2026-09-30T23:59:59+10:00')-new Date())/864e5);
+  const n=document.getElementById('cd-n'),u=document.getElementById('cd-u');
+  if(days>1){n.textContent=days;u.textContent='days to go'}
+  else if(days===1){n.textContent='1';u.textContent='day to go'}
+  else if(days===0){n.textContent='Today';u.textContent='is the expected date'}
+  else{n.textContent='Due';u.textContent='results pending';document.getElementById('cd-text').textContent='The expected date has passed. Results appear on the SkillSelect invitation rounds page once the Department confirms the round.'}
+})();
+
+/* checker */
+const sel=document.getElementById('ck-occ');
+sel.innerHTML='<option value="">Not on the June list (e.g. Software Engineer)</option>'+[...OCC].sort((a,b)=>a.n.localeCompare(b.n)).map(o=>`<option value="${esc(o.n)}">${esc(o.n)}</option>`).join('');
+sel.value="Registered Nurse (Medical)";
+const QUICK=[["Nurse","Registered Nurse (Medical)"],["Electrician","Electrician (General)"],["Teacher","Secondary School Teacher"],["Engineer","Telecommunications Engineer"],["Software","" ]];
+const qk=document.getElementById('quick');
+qk.innerHTML=QUICK.map(([l,v])=>`<button type="button" class="chip" data-v="${esc(v)}">${l}</button>`).join('');
+qk.addEventListener('click',e=>{const b=e.target.closest('.chip');if(!b)return;sel.value=b.dataset.v;check()});
+let pts=85;const out=document.getElementById('pts');
+document.getElementById('minus').onclick=()=>{pts=Math.max(65,pts-5);check()};
+document.getElementById('plus').onclick=()=>{pts=Math.min(120,pts+5);check()};
+sel.addEventListener('change',check);
+document.getElementById('checker').addEventListener('submit',e=>e.preventDefault());
+const pct=v=>((v-65)/(120-65))*100;
+function check(){
+  out.textContent=pts;
+  const o=OCC.find(x=>x.n===sel.value),v=document.getElementById('verdict');
+  const fill=document.getElementById('m-fill'),tick=document.getElementById('m-tick'),ml=document.getElementById('m-lab');
+  fill.style.width=pct(pts)+'%';
+  qk.querySelectorAll('.chip').forEach(c=>c.setAttribute('aria-pressed',c.dataset.v===sel.value));
+  if(!o){tick.hidden=true;ml.textContent='no cut-off';fill.style.background='var(--bad)';
+    v.innerHTML=`<div class="verdict bad"><strong>No 189 invitations last round</strong><p>This occupation wasn't invited at any score in June 2026. State nomination (190 or 491) or employer sponsorship is the more realistic route for now.</p></div>`;return}
+  tick.hidden=false;tick.style.left=`calc(${pct(o.p)}% - 1px)`;ml.textContent='cut-off '+o.p;
+  const d=pts-o.p;
+  const [c,h,t]= d>=5?["good","Above the last cut-off",`You're ${d} points over the June cut-off of ${o.p} for ${o.n}.`]
+    : d===0?["warn","Right at the cut-off",`${o.n} was invited at exactly ${o.p}. At this score the tie-break decides it; in June it was a date of effect of 24 April 2026.`]
+    : ["bad","Below the last cut-off",`${o.n} was invited at ${o.p}; you need ${-d} more. Superior English, partner skills, Professional Year or NAATI can each add 5, and state nomination adds 5 (190) or 15 (491).`];
+  fill.style.background=c==='good'?'var(--good)':c==='warn'?'var(--warn)':'var(--bad)';
+  v.innerHTML=`<div class="verdict ${c}"><strong>${h}</strong><p>${esc(t)}</p></div>`;
+}
+check();
+
+/* histogram */
+(function(){
+  const svg=document.getElementById('histo'),scores=[65,70,75,80,85,90,95,100];
+  const c=scores.map(s=>OCC.filter(o=>o.p===s).length),max=Math.ceil(Math.max(...c)/10)*10;
+  const L=30,R=414,T=18,B=196,bw=(R-L)/scores.length,mode=c.indexOf(Math.max(...c));let h='';
+  for(let v=0;v<=max;v+=10){const y=B-(v/max)*(B-T);h+=`<line class="grid" x1="${L}" x2="${R}" y1="${y}" y2="${y}"/><text x="${L-8}" y="${y+4}" text-anchor="end">${v}</text>`}
+  scores.forEach((s,i)=>{const hh=Math.max(2,(c[i]/max)*(B-T)),w=bw-14,x=L+i*bw+7,y=B-hh;
+    h+=`<rect class="bar${i===mode?' hi':''}" x="${x}" y="${y}" width="${w}" height="${hh}" rx="4"/><text class="val" x="${x+w/2}" y="${y-6}" text-anchor="middle">${c[i]}</text><text x="${x+w/2}" y="${B+17}" text-anchor="middle">${s}</text>`});
+  h+=`<text x="${(L+R)/2}" y="228" text-anchor="middle">minimum points invited</text>`;
+  svg.innerHTML=h;
+})();
+
+/* occupations */
+let grp="All";
+const chips=document.getElementById('chips');
+chips.innerHTML=GROUPS.map(g=>`<button type="button" class="chip" aria-pressed="${g==='All'}" data-g="${g}">${g}<span class="mono">${g==='All'?OCC.length:OCC.filter(o=>o.g===g).length}</span></button>`).join('');
+chips.addEventListener('click',e=>{const b=e.target.closest('.chip');if(!b)return;grp=b.dataset.g;chips.querySelectorAll('.chip').forEach(x=>x.setAttribute('aria-pressed',x===b));renderOcc()});
+function renderOcc(){
+  const q=document.getElementById('q').value.trim().toLowerCase(),s=document.getElementById('sort').value;
+  const rows=OCC.filter(o=>(grp==='All'||o.g===grp)&&o.n.toLowerCase().includes(q));
+  rows.sort(s==='az'?(a,b)=>a.n.localeCompare(b.n):s==='pts-desc'?(a,b)=>b.p-a.p||a.n.localeCompare(b.n):(a,b)=>a.p-b.p||a.n.localeCompare(b.n));
+  document.getElementById('occ-body').innerHTML=rows.map(o=>`<div class="occ-row"><span>${esc(o.n)}</span><span class="g"><i style="background:${GCOL[o.g]}"></i>${o.g}</span><span class="p"><span class="pts ${pillCls(o.p)}">${o.p}</span></span></div>`).join('')||'<div class="occ-row"><span class="np">No invited occupation matches. It likely received no invitations this round.</span></div>';
+  document.getElementById('occ-count').textContent=`Showing ${rows.length} of ${OCC.length} invited occupations`;
+}
+document.getElementById('q').addEventListener('input',renderOcc);
+document.getElementById('sort').addEventListener('change',renderOcc);
+renderOcc();
+
+/* rounds chart */
+(function(){
+  const d=[["7 Nov 2024",15000],["21 Aug 2025",6887],["13 Nov 2025",null],["4 Jun 2026",10000],["By 30 Sep 2026","next"]];
+  const svg=document.getElementById('rounds-chart'),L=40,R=552,T=20,B=210,max=16000,bw=(R-L)/d.length;let h='';
+  for(let v=0;v<=max;v+=4000){const y=B-(v/max)*(B-T);h+=`<line class="grid" x1="${L}" x2="${R}" y1="${y}" y2="${y}"/><text x="${L-8}" y="${y+4}" text-anchor="end">${v/1000}k</text>`}
+  d.forEach(([lab,v],i)=>{const w=bw-30,x=L+i*bw+15,cx=x+w/2;
+    if(v==="next"){h+=`<rect class="ghost" x="${x}" y="${T+30}" width="${w}" height="${B-T-30}" rx="5"/><text class="val" x="${cx}" y="${(T+30+B)/2+5}" text-anchor="middle" style="font-size:16px">?</text>`}
+    else if(v===null){h+=`<rect class="bar old" x="${x}" y="${B-4}" width="${w}" height="4" rx="2"/><text x="${cx}" y="${B-12}" text-anchor="middle">not published</text>`}
+    else{const hh=(v/max)*(B-T);h+=`<rect class="bar${i===3?' hi':''}" x="${x}" y="${B-hh}" width="${w}" height="${hh}" rx="5"/><text class="val" x="${cx}" y="${B-hh-7}" text-anchor="middle">${v.toLocaleString('en-AU')}</text>`}
+    h+=`<text x="${cx}" y="${B+20}" text-anchor="middle">${lab}</text>`});
+  svg.innerHTML=h;
+})();
+
+/* program chart */
+(function(){
+  const d=[["Employer sponsored",44000,58040],["State nominated (190)",33000,35500],["Skilled independent (189)",16900,21090],["Regional provisional (491/494)",33000,14110]];
+  const svg=document.getElementById('prog-chart'),L=4,R=556,max=60000,sx=v=>L+(v/max)*(R-L-70);let h='',y=8;
+  for(let v=0;v<=max;v+=20000){const x=sx(v);h+=`<line class="grid" x1="${x}" x2="${x}" y1="4" y2="256"/><text x="${x}" y="274" text-anchor="${v===0?'start':'middle'}">${v/1000}k</text>`}
+  d.forEach(([lab,a,b])=>{const p=Math.round((b-a)/a*100);
+    h+=`<text class="lab" x="${L}" y="${y+12}">${lab}<tspan dx="8" style="fill:${p<0?'var(--bad)':'var(--good)'};font:600 12px var(--mono)">${p>0?'+':''}${p}%</tspan></text>`;
+    h+=`<rect class="bar old" x="${sx(0)}" y="${y+20}" width="${sx(a)-sx(0)}" height="12" rx="3"/><text x="${sx(a)+7}" y="${y+30}">${a.toLocaleString('en-AU')}</text>`;
+    h+=`<rect class="bar" x="${sx(0)}" y="${y+36}" width="${sx(b)-sx(0)}" height="12" rx="3"/><text class="val" x="${sx(b)+7}" y="${y+46}">${b.toLocaleString('en-AU')}</text>`;
+    y+=63});
+  svg.innerHTML=h;
+})();
+
+/* states */
+const ST=[
+ ["NSW","New South Wales","pending","Not yet open","2025–26 places fully allocated. Settings for 2026–27 under review.","https://www.nsw.gov.au/visas-and-migration/skilled-visas"],
+ ["VIC","Victoria","pending","Not yet open","2026–27 program not yet open. Last year's ROIs closed early after heavy demand.","https://liveinmelbourne.vic.gov.au/"],
+ ["QLD","Queensland","pending","Not yet open","Awaiting Commonwealth allocations for 2026–27. Had 2,600 places last year.","https://migration.qld.gov.au/"],
+ ["WA","Western Australia","open","Accepting","Taking applications at last check. 2026–27 settings not formally announced.","https://migration.wa.gov.au/"],
+ ["SA","South Australia","open","Open","Reported open for 2026–27 as of 31 August 2026.","https://www.migration.sa.gov.au/"],
+ ["TAS","Tasmania","open","Open","One of the more accessible programs. Uninvited ROIs carry into the new year for six months.","https://www.migration.tas.gov.au/"],
+ ["ACT","Australian Capital Territory","open","Open","Reported open as of 31 August 2026. Watch its monthly invitation results.","https://www.act.gov.au/migration"],
+ ["NT","Northern Territory","open","Open","1,850 nominations for 2026–27: 850 × 190 and 1,000 × 491. Opened 21 August 2026.","https://theterritory.com.au/migrate"]
+];
+document.getElementById('state-grid').innerHTML=ST.map(s=>`<div class="state"><div class="top"><span class="code">${s[0]}</span><span class="status ${s[2]}">${s[3]}</span></div><div class="name">${s[1]}</div><p>${s[4]}</p><a href="${s[5]}">Official site</a></div>`).join('');
+
+/* news */
+const NEWS=[
+ {d:"2026-09-19",t:"Directions 121 and 122 replace Direction 119",b:"New processing order for skilled visas. Priority sectors (construction, healthcare, teaching, agriculture, aquaculture, fishing, resources, law enforcement, defence) go first, onshore or offshore. Direction 122 covers 186, 189, 190, 191, 491 and 494. Offshore applications that include family now sit lowest.",c:"Processing",k:1,u:"https://immi.homeaffairs.gov.au/visas/getting-a-visa/visa-processing-times/visa-processing-priorities/skilled-visa",s:"Home Affairs"},
+ {d:"2026-09-17",t:"Minister Burke announces migration package",b:"Housing construction trade qualifications to earn the same points as a degree for 189, 190 and 491. Most future student and 485 visa holders lose the ability to bring partners and children. Start dates for most measures aren't published yet.",c:"Policy",k:1,u:"https://www.australiamigrate.com/australian-migration-changes-september-2026/",s:"AustraliaMigrate"},
+ {d:"2026-09-17",t:"Visitor visas to carry No Further Stay; working holiday ballot",b:"Future visitor visas expected to carry condition 8503, blocking most onshore applications. Second-year working holiday places capped at 45,000 and third-year at 5,000, allocated by ballot.",c:"Policy",k:0,u:"https://www.australiamigrate.com/australian-migration-changes-september-2026/",s:"AustraliaMigrate"},
+ {d:"2026-09-10",t:"Next 189 round expected by 30 September",b:"The SkillSelect page says the first round of 2026–27 is expected by 30 September and asks EOI holders to keep details current. Temporary graduate visa holders reached 271,191 at 30 June 2026.",c:"SkillSelect",k:1,u:"https://www.visasupdate.com/post/australia-189-invitation-round-september-2026-graduate-visa-surge",s:"Visasupdate"},
+ {d:"2026-08-21",t:"Northern Territory opens its 2026–27 program",b:"1,850 nominations: 850 for the 190 and 1,000 for the 491, across onshore and selected offshore streams.",c:"States",k:0,u:"https://www.top10migration.com/post/state-nomination-2026-27-tracker",s:"Top10 Migration"},
+ {d:"2026-07-25",t:"Direction 119 takes effect (since revoked)",b:"Prioritised applicants already in Australia. It applied for 56 days before Directions 121 and 122 replaced it.",c:"Processing",k:0,u:"https://www.roammigrationlaw.com/news/ministerial-direction-121-122-skilled-visa-processing-priorities/",s:"Roam Migration Law"},
+ {d:"2026-07-01",t:"2026–27 program year begins",b:"Occupation ceilings reset and state nomination programs start reopening progressively.",c:"Program",k:0,u:"https://magpieconsultants.com.au/skilled-visa-invitation-rounds-2026-27-guide/",s:"Magpie Consultants"},
+ {d:"2026-06-04",t:"10,000 subclass 189 invitations issued",b:"Largest round of 2025–26. Construction trades invited at 65, nursing and teaching mostly 75–80, specialist medicine up to 100. Tie-break 24 April 2026.",c:"SkillSelect",k:1,u:"https://www.widen.com.au/invitation-rounds/2026-06-04/",s:"WIDEN"},
+ {d:"2026-05-12",t:"2026–27 planning levels announced",b:"185,000 places held. 189 up to 21,090, 190 up to 35,500, employer sponsored up to 58,040, regional provisional cut to 14,110. Points test reform flagged.",c:"Program",k:1,u:"https://www.studynash.co/blog/2026-27-migration-program-planning-levels",s:"Studynash"}
+];
+const dt=d=>{const x=new Date(d+'T00:00:00');return `<b>${x.getDate()}</b>${x.toLocaleDateString('en-AU',{month:'short',year:'numeric'})}`};
+const item=n=>`<article class="item"><time datetime="${n.d}">${dt(n.d)}</time><div><h3>${esc(n.t)}</h3><p><span class="tag${n.k?' key':''}">${n.c}</span> ${esc(n.b)}</p><a class="src" href="${n.u}">${n.s}</a></div></article>`;
+document.getElementById('feed-mini').innerHTML=NEWS.filter(n=>n.k).slice(0,3).map(item).join('');
+const cats=["All",...new Set(NEWS.map(n=>n.c))];let cat="All";
+const nc=document.getElementById('news-chips');
+nc.innerHTML=cats.map(c=>`<button type="button" class="chip" aria-pressed="${c==='All'}" data-c="${c}">${c}</button>`).join('');
+function renderNews(){document.getElementById('feed').innerHTML=NEWS.filter(n=>cat==='All'||n.c===cat).map(item).join('')}
+nc.addEventListener('click',e=>{const b=e.target.closest('.chip');if(!b)return;cat=b.dataset.c;nc.querySelectorAll('.chip').forEach(x=>x.setAttribute('aria-pressed',x===b));renderNews()});
+renderNews();
+})();
+</script>
