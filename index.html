@@ -239,7 +239,7 @@ select{background-image:linear-gradient(45deg,transparent 50%,var(--muted) 50%),
 /* round bars */
 .rbars{display:grid;gap:14px}
 .rbar{display:grid;grid-template-columns:110px minmax(0,1fr);gap:12px;align-items:center}
-.rbar .l{font-size:13px;font-weight:600;line-height:1.3}
+.rbar .l{font-size:13px;font-weight:600;line-height:1.3;white-space:nowrap}
 .rbar .l small{display:block;font:500 11.5px var(--body);color:var(--muted)}
 .rbar .track{position:relative;height:30px;border-radius:7px;background:var(--surface-2)}
 .rbar .fill{position:absolute;inset:0 auto 0 0;border-radius:7px;background:var(--accent);display:flex;align-items:center;justify-content:flex-end;padding-right:10px;font:600 12.5px var(--mono);color:var(--accent-ink);min-width:64px}
@@ -248,7 +248,7 @@ select{background-image:linear-gradient(45deg,transparent 50%,var(--muted) 50%),
 .rbar .np-t{position:absolute;left:12px;top:50%;transform:translateY(-50%);font:500 12px var(--mono);color:var(--faint);font-style:italic}
 .axis-row{display:grid;grid-template-columns:110px minmax(0,1fr);gap:12px}
 .axis-row .ticks{display:flex;justify-content:space-between;font:500 11px var(--mono);color:var(--faint)}
-@media (max-width:420px){.rbar,.axis-row{grid-template-columns:84px minmax(0,1fr);gap:10px}}
+@media (max-width:420px){.rbar,.axis-row{grid-template-columns:100px minmax(0,1fr);gap:10px}.rbar .l{font-size:12.5px}}
 /* rounds table (legacy) */
 .tbl{overflow-x:auto;border:1px solid var(--line);border-radius:var(--r-sm)}
 table{width:100%;border-collapse:collapse;font-size:14px;min-width:620px}
@@ -302,6 +302,96 @@ footer ul{margin:0;padding-left:18px;display:grid;gap:3px}
   section.panel:not([hidden]){animation:fade .3s ease-out}
   @keyframes fade{from{transform:translateY(6px)}to{transform:none}}
 }
+
+/* ===== Spacing & alignment system =====
+   One 4px-based scale used everywhere: 8 · 12 · 16 · 20 · 24 · 32 · 40 */
+:root{--s1:8px;--s2:12px;--s3:16px;--s4:20px;--s5:24px;--s6:32px;--s7:40px;--pad:28px}
+main{padding-block:var(--s7) 0}
+.page-head{margin-bottom:var(--s6);gap:var(--s2)}
+.page-head h1{line-height:1.08}
+.page-head p{margin-top:var(--s2);line-height:1.6}
+.eyebrow{display:block;margin-bottom:var(--s1)}
+.pass-top .eyebrow,.pass-fields .eyebrow,.stub .eyebrow,.kpi .eyebrow{margin-bottom:0}
+section.panel{gap:var(--s5)}
+.grid2,.kpis,.states{gap:var(--s5)}
+.card{padding:var(--pad)}
+.card-h{margin-bottom:var(--s5);gap:var(--s2)}
+.card h2{line-height:1.25}
+.card .sub{margin-top:6px;line-height:1.55}
+.pass-main{gap:var(--s3)}
+.pass-fields{gap:var(--s2) var(--s6);padding-top:var(--s4);margin-top:var(--s1)}
+.kpi{padding:var(--s4) 22px}
+.kpi .v{margin-top:var(--s2)}
+.kpi .d{margin-top:6px}
+.checker{gap:var(--s4)}
+.field{gap:var(--s1)}
+.chips,.quick{gap:var(--s1)}
+.chip{padding:7px 14px}
+.toolbar{margin-bottom:var(--s3);gap:var(--s2)}
+.occ-list{margin-top:var(--s4)}
+.occ-head,.occ-row{padding:14px 18px}
+.foot-note{margin-top:var(--s3);line-height:1.55}
+.callout{margin-top:var(--s4);padding:var(--s3) 18px;line-height:1.55}
+.legend{margin-top:var(--s4)}
+.rbars{gap:var(--s3)}
+.rhead,.rrow{padding:14px 18px}
+.steps{gap:var(--s5)}
+.step{padding-top:var(--s3)}
+.step b{margin-bottom:6px}
+.step p{line-height:1.6}
+.state{padding:var(--s4) 22px;gap:var(--s2)}
+.state p{line-height:1.55}
+.item{padding:var(--s5) 0;gap:var(--s4)}
+.item:first-child{padding-top:var(--s1)}
+.item h3{margin-bottom:var(--s1)}
+.item p{line-height:1.65}
+.item .src{margin-top:var(--s2)}
+.item .tag{margin-right:4px}
+#news .chips{margin-bottom:var(--s3)!important}
+footer{margin-top:56px;padding-top:var(--s5);gap:var(--s2)}
+footer ul{gap:6px}
+
+/* planning-level bars */
+.pbars{display:grid;gap:var(--s5)}
+.pbar{display:grid;gap:var(--s1)}
+.pbar-h{display:flex;justify-content:space-between;align-items:center;gap:var(--s2);font-weight:600;font-size:14.5px;margin-bottom:2px}
+.pbar-h .delta{margin-left:0;vertical-align:0}
+.prow{display:grid;grid-template-columns:44px minmax(0,1fr) 64px;gap:var(--s2);align-items:center}
+.prow .yr{font:500 11.5px var(--mono);color:var(--muted)}
+.prow .track{height:12px;border-radius:99px;background:var(--surface-2)}
+.prow .fill{height:100%;border-radius:99px;background:var(--accent)}
+.prow .fill.old{background:var(--line-2)}
+.prow .n{font:500 12.5px var(--mono);color:var(--muted);text-align:right;font-variant-numeric:tabular-nums}
+.prow .n.strong{color:var(--ink);font-weight:600}
+
+@media (max-width:980px){
+  main{padding-block:0}
+  .mtop{padding:14px 16px 12px;margin-bottom:var(--s6)}
+  .seg{margin-top:var(--s2);gap:var(--s1)}
+}
+@media (max-width:760px){
+  :root{--pad:20px}
+  section.panel{gap:var(--s4)}
+  .grid2,.kpis,.states{gap:var(--s3)}
+  .page-head{margin-bottom:var(--s5)}
+  .card-h{margin-bottom:var(--s4)}
+  .kpi{padding:var(--s3) 18px}
+  .kpi .v{font-size:27px}
+}
+@media (max-width:640px){
+  .pass-fields{gap:var(--s3) var(--s4)}
+  .stub{padding:var(--s4)}
+  .occ-row{padding:14px 16px;gap:4px 16px}
+  .rrow{padding:18px 16px;gap:14px 16px}
+  .rrow .f{gap:4px}
+  /* news: date sits above the story so text gets the full width */
+  .item,.mini .item{grid-template-columns:1fr;gap:var(--s1);padding:var(--s4) 0}
+  .item time{display:flex;align-items:baseline;gap:6px;padding-top:0}
+  .item time b{display:inline;font-size:15px;font-family:var(--mono);font-weight:600}
+  .chart text{font-size:13px}
+  .chart .val{font-size:13px}
+}
+
 </style>
 </head>
 <body>
@@ -446,7 +536,7 @@ footer ul{margin:0;padding-left:18px;display:grid;gap:3px}
       </div>
       <div class="card">
         <div class="card-h"><div><h2>Skill stream places, year on year</h2><p class="sub">Regional provisional places were cut hardest. 189, 190 and employer-sponsored places grew.</p></div></div>
-        <svg class="chart" id="prog-chart" viewBox="0 0 560 280" role="img" aria-label="Planning levels comparison"></svg>
+        <div class="pbars" id="prog-chart" role="img" aria-label="Skill stream planning levels, 2025–26 compared with 2026–27"></div>
         <div class="legend"><span><i style="background:var(--line-2)"></i>2025–26</span><span><i style="background:var(--accent)"></i>2026–27</span></div>
       </div>
       <div class="card">
@@ -599,7 +689,7 @@ renderOcc();
 
 /* rounds chart */
 (function(){
-  const d=[["By 30 Sep 2026","2026–27","next"],["4 Jun 2026","2025–26",10000],["13 Nov 2025","2025–26",null],["21 Aug 2025","2025–26",6887],["7 Nov 2024","2024–25",15000]];
+  const d=[["Next round","by 30 Sep 2026","next"],["4 Jun 2026","2025–26",10000],["13 Nov 2025","2025–26",null],["21 Aug 2025","2025–26",6887],["7 Nov 2024","2024–25",15000]];
   const max=16000;
   let h=d.map(([lab,yr,v],i)=>{
     let bar;
@@ -614,14 +704,11 @@ renderOcc();
 /* program chart */
 (function(){
   const d=[["Employer sponsored",44000,58040],["State nominated (190)",33000,35500],["Skilled independent (189)",16900,21090],["Regional provisional (491/494)",33000,14110]];
-  const svg=document.getElementById('prog-chart'),L=4,R=556,max=60000,sx=v=>L+(v/max)*(R-L-70);let h='',y=8;
-  for(let v=0;v<=max;v+=20000){const x=sx(v);h+=`<line class="grid" x1="${x}" x2="${x}" y1="4" y2="256"/><text x="${x}" y="274" text-anchor="${v===0?'start':'middle'}">${v/1000}k</text>`}
-  d.forEach(([lab,a,b])=>{const p=Math.round((b-a)/a*100);
-    h+=`<text class="lab" x="${L}" y="${y+12}">${lab}<tspan dx="8" style="fill:${p<0?'var(--bad)':'var(--good)'};font:600 12px var(--mono)">${p>0?'+':''}${p}%</tspan></text>`;
-    h+=`<rect class="bar old" x="${sx(0)}" y="${y+20}" width="${sx(a)-sx(0)}" height="12" rx="3"/><text x="${sx(a)+7}" y="${y+30}">${a.toLocaleString('en-AU')}</text>`;
-    h+=`<rect class="bar" x="${sx(0)}" y="${y+36}" width="${sx(b)-sx(0)}" height="12" rx="3"/><text class="val" x="${sx(b)+7}" y="${y+46}">${b.toLocaleString('en-AU')}</text>`;
-    y+=63});
-  svg.innerHTML=h;
+  const max=60000,w=v=>(v/max*100).toFixed(1)+'%';
+  document.getElementById('prog-chart').innerHTML=d.map(([lab,a,b])=>{const p=Math.round((b-a)/a*100);
+    return `<div class="pbar"><div class="pbar-h"><span>${lab}</span><span class="delta ${p<0?'down':'up'}">${p>0?'+':''}${p}%</span></div>
+      <div class="prow"><span class="yr">25–26</span><div class="track"><div class="fill old" style="width:${w(a)}"></div></div><span class="n">${a.toLocaleString('en-AU')}</span></div>
+      <div class="prow"><span class="yr">26–27</span><div class="track"><div class="fill" style="width:${w(b)}"></div></div><span class="n strong">${b.toLocaleString('en-AU')}</span></div></div>`}).join('');
 })();
 
 /* states */
