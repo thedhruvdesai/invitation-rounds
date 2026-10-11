@@ -341,6 +341,8 @@ section.panel{gap:var(--s5)}
 .step p{line-height:1.6}
 .state{padding:var(--s4) 22px;gap:var(--s2)}
 .state p{line-height:1.55}
+.noms{display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap;border-top:1px solid var(--line);padding-top:var(--s2);font-size:12px;color:var(--muted)}
+.noms b{font:600 12.5px var(--mono);color:var(--ink)}
 .item{padding:var(--s5) 0;gap:var(--s4)}
 .item:first-child{padding-top:var(--s1)}
 .item h3{margin-bottom:var(--s1)}
@@ -404,7 +406,7 @@ footer ul{gap:6px}
     </div>
     <nav class="menu" role="tablist" aria-label="Sections" id="menu"></nav>
     <div class="side-foot">
-      <span class="live">Data checked 29 Sep 2026</span>
+      <span class="live">Data checked 12 Oct 2026</span>
       <span>Refreshes every Monday</span>
     </div>
   </aside>
@@ -414,7 +416,7 @@ footer ul{gap:6px}
       <div class="row">
         <div class="logo">
           <div class="logo-mark"><svg viewBox="0 0 24 24" fill="none" stroke="#E7AE48" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12h13"/><path d="m12 7 5 5-5 5"/><path d="M20 4v16"/></svg></div>
-          <div><b>Invitation Rounds</b><span>Checked 29 Sep 2026</span></div>
+          <div><b>Invitation Rounds</b><span>Checked 12 Oct 2026</span></div>
         </div>
       </div>
       <div class="seg" role="tablist" aria-label="Sections" id="seg"></div>
@@ -428,10 +430,10 @@ footer ul{gap:6px}
 
       <div class="pass">
         <div class="pass-main">
-          <div class="pass-top"><span class="eyebrow">Next invitation round · Subclass 189</span><span class="badge">Expected by 30 Sep 2026</span></div>
+          <div class="pass-top"><span class="eyebrow">Next invitation round · Subclass 189</span><span class="badge">Set for 15 Oct 2026</span></div>
           <div class="route"><span class="code">EOI</span><span class="arrow" aria-hidden="true"></span><span class="code">ITA</span></div>
           <div class="count"><span class="n" id="cd-n">—</span><span class="u" id="cd-u">days to go</span></div>
-          <p id="cd-text">First round of the 2026–27 program year. The Department confirms rounds only after they run, so keep your EOI details current.</p>
+          <p id="cd-text">First round of the 2026–27 program year. No round ran in September; Home Affairs now says it will be held on 15 October. Make sure your EOI is up to date before then.</p>
           <div class="pass-fields">
             <div><span class="eyebrow">Last round</span><b>04 JUN 26</b></div>
             <div><span class="eyebrow">Invited</span><b>10,000</b></div>
@@ -499,7 +501,7 @@ footer ul{gap:6px}
     <section class="panel" id="rounds" role="tabpanel" hidden>
       <div class="page-head"><div><div class="eyebrow">History</div><h1>Round history</h1><p>Since 2025–26 the Department runs a few large rounds a year instead of monthly draws.</p></div></div>
       <div class="card">
-        <div class="card-h"><div><h2>Subclass 189 invitations per round</h2><p class="sub">Newest first. The dashed bar is the round expected by 30 September 2026.</p></div></div>
+        <div class="card-h"><div><h2>Subclass 189 invitations per round</h2><p class="sub">Newest first. The dashed bar is the round set for 15 October 2026.</p></div></div>
         <div class="rbars" id="rounds-chart" role="img" aria-label="Invitations per round"></div>
         <div class="legend"><span><i style="background:var(--gold)"></i>Latest round</span><span><i style="background:var(--accent)"></i>Earlier rounds</span></div>
       </div>
@@ -507,7 +509,7 @@ footer ul{gap:6px}
         <div class="card-h"><div><h2>Round log</h2></div></div>
         <div class="rlist">
           <div class="rhead"><span>Round</span><span>Program year</span><span>189 invited</span><span>491 family</span><span>Min points</span><span>Tie-break</span></div>
-          <div class="rrow next"><span class="when">By 30 Sep 2026<small>Expected</small></span><span class="yr">2026–27</span><span class="f np"><span class="k">189 invited</span>pending</span><span class="f np"><span class="k">491 family</span>pending</span><span class="f np"><span class="k">Min points</span>pending</span><span class="f np"><span class="k">Tie-break</span>pending</span></div>
+          <div class="rrow next"><span class="when">15 Oct 2026<small>Scheduled</small></span><span class="yr">2026–27</span><span class="f np"><span class="k">189 invited</span>pending</span><span class="f np"><span class="k">491 family</span>pending</span><span class="f np"><span class="k">Min points</span>pending</span><span class="f np"><span class="k">Tie-break</span>pending</span></div>
           <div class="rrow"><span class="when">4 Jun 2026<small>2025–26</small></span><span class="yr">2025–26</span><span class="f"><span class="k">189 invited</span>10,000</span><span class="f np"><span class="k">491 family</span>not published</span><span class="f"><span class="k">Min points</span>65–100</span><span class="f"><span class="k">Tie-break</span>24 Apr 2026</span></div>
           <div class="rrow"><span class="when">13 Nov 2025<small>2025–26</small></span><span class="yr">2025–26</span><span class="f np"><span class="k">189 invited</span>not published</span><span class="f"><span class="k">491 family</span>—</span><span class="f"><span class="k">Min points</span>65–100</span><span class="f"><span class="k">Tie-break</span>—</span></div>
           <div class="rrow"><span class="when">21 Aug 2025<small>2025–26</small></span><span class="yr">2025–26</span><span class="f"><span class="k">189 invited</span>6,887</span><span class="f"><span class="k">491 family</span>150</span><span class="f"><span class="k">Min points</span>65–110</span><span class="f"><span class="k">Tie-break</span>—</span></div>
@@ -551,7 +553,7 @@ footer ul{gap:6px}
 
     <!-- STATES -->
     <section class="panel" id="states" role="tabpanel" hidden>
-      <div class="page-head"><div><div class="eyebrow">190 &amp; 491</div><h1>State nomination</h1><p>Runs separately from SkillSelect rounds. Nationally, 190 places rose to 35,500. Statuses last verified late August to mid September 2026 and can change without notice.</p></div></div>
+      <div class="page-head"><div><div class="eyebrow">190 &amp; 491</div><h1>State nomination</h1><p>Runs separately from SkillSelect rounds. Nationally, 190 places rose to 35,500. Statuses last verified 3–12 October 2026 and can change without notice. "Jul–Aug" counts are nominations Home Affairs reports from 1 July to 31 August 2026.</p></div></div>
       <div class="states" id="state-grid"></div>
     </section>
 
@@ -619,7 +621,7 @@ show(TABS.some(t=>t[0]===start)?start:'overview',false);
 
 /* countdown */
 (function(){
-  const days=Math.ceil((new Date('2026-09-30T23:59:59+10:00')-new Date())/864e5);
+  const days=Math.ceil((new Date('2026-10-15T23:59:59+10:00')-new Date())/864e5);
   const n=document.getElementById('cd-n'),u=document.getElementById('cd-u');
   if(days>1){n.textContent=days;u.textContent='days to go'}
   else if(days===1){n.textContent='1';u.textContent='day to go'}
@@ -689,7 +691,7 @@ renderOcc();
 
 /* rounds chart */
 (function(){
-  const d=[["Next round","by 30 Sep 2026","next"],["4 Jun 2026","2025–26",10000],["13 Nov 2025","2025–26",null],["21 Aug 2025","2025–26",6887],["7 Nov 2024","2024–25",15000]];
+  const d=[["Next round","15 Oct 2026","next"],["4 Jun 2026","2025–26",10000],["13 Nov 2025","2025–26",null],["21 Aug 2025","2025–26",6887],["7 Nov 2024","2024–25",15000]];
   const max=16000;
   let h=d.map(([lab,yr,v],i)=>{
     let bar;
@@ -713,19 +715,22 @@ renderOcc();
 
 /* states */
 const ST=[
- ["NSW","New South Wales","pending","Not yet open","2025–26 places fully allocated. Settings for 2026–27 under review.","https://www.nsw.gov.au/visas-and-migration/skilled-visas"],
- ["VIC","Victoria","pending","Not yet open","2026–27 program not yet open. Last year's ROIs closed early after heavy demand.","https://liveinmelbourne.vic.gov.au/"],
- ["QLD","Queensland","pending","Not yet open","Awaiting Commonwealth allocations for 2026–27. Had 2,600 places last year.","https://migration.qld.gov.au/"],
- ["WA","Western Australia","open","Accepting","Taking applications at last check. 2026–27 settings not formally announced.","https://migration.wa.gov.au/"],
- ["SA","South Australia","open","Open","Reported open for 2026–27 as of 31 August 2026.","https://www.migration.sa.gov.au/"],
- ["TAS","Tasmania","open","Open","One of the more accessible programs. Uninvited ROIs carry into the new year for six months.","https://www.migration.tas.gov.au/"],
- ["ACT","Australian Capital Territory","open","Open","Reported open as of 31 August 2026. Watch its monthly invitation results.","https://www.act.gov.au/migration"],
- ["NT","Northern Territory","open","Open","1,850 nominations for 2026–27: 850 × 190 and 1,000 × 491. Opened 21 August 2026.","https://theterritory.com.au/migrate"]
+ ["NSW","New South Wales","pending","Not yet open","2025–26 places were fully allocated (published 4 Sep). 2026–27 settings not yet released.","11 × 190 · 0 × 491","https://www.nsw.gov.au/visas-and-migration/skilled-visas"],
+ ["VIC","Victoria","pending","Not yet open","Still not open as at 3 Oct 2026. Last year's ROIs closed on 28 Apr after heavy demand.","0 × 190 · 0 × 491","https://liveinmelbourne.vic.gov.au/"],
+ ["QLD","Queensland","pending","Not yet open","Waiting on its final 2026–27 allocation before reopening (checked 3 Oct). Had 2,600 places last year.","6 × 190 · <5 × 491","https://migration.qld.gov.au/"],
+ ["WA","Western Australia","open","Open","Ran its first 2026–27 invitation round in mid-September. Allocation not yet published.","17 × 190 · 120 × 491","https://migration.wa.gov.au/"],
+ ["SA","South Australia","open","Open","Reopened for 2026–27 on 26 Aug 2026. Allocation not yet published.","0 × 190 · 0 × 491","https://www.migration.sa.gov.au/"],
+ ["TAS","Tasmania","open","Open","2,050 places: 1,250 × 190 and 800 × 491. ROIs opened 17 Aug with weekly invitations.","206 × 190 · 55 × 491","https://www.migration.tas.gov.au/"],
+ ["ACT","Australian Capital Territory","open","Open","New nomination portal live since 30 Jul 2026. Allocation pending confirmation.","<5 × 190 · <5 × 491","https://www.act.gov.au/migration"],
+ ["NT","Northern Territory","open","Open","1,850 places: 850 × 190 and 1,000 × 491. Opened 21 Aug 2026.","91 × 190 · 25 × 491","https://theterritory.com.au/migrate"]
 ];
-document.getElementById('state-grid').innerHTML=ST.map(s=>`<div class="state"><div class="top"><span class="code">${s[0]}</span><span class="status ${s[2]}">${s[3]}</span></div><div class="name">${s[1]}</div><p>${s[4]}</p><a href="${s[5]}">Official site</a></div>`).join('');
+document.getElementById('state-grid').innerHTML=ST.map(s=>`<div class="state"><div class="top"><span class="code">${s[0]}</span><span class="status ${s[2]}">${s[3]}</span></div><div class="name">${s[1]}</div><p>${s[4]}</p><div class="noms"><span>Jul–Aug nominations</span><b>${esc(s[5])}</b></div><a href="${s[6]}">Official site</a></div>`).join('');
 
 /* news */
 const NEWS=[
+ {d:"2026-10-12",t:"First 189 round of 2026–27 set for 15 October",b:"No 189 round ran by the expected 30 September date. The SkillSelect page now says the next round will be held on 15 October 2026 and asks EOI holders to make sure their details are accurate. No 189 or 491 family invitations have been issued yet in 2026–27.",c:"SkillSelect",k:1,u:"https://immi.homeaffairs.gov.au/visas/working-in-australia/skillselect/invitation-rounds",s:"Home Affairs"},
+ {d:"2026-10-03",t:"Queensland, Victoria and NSW still not open",b:"Tasmania, NT, SA, ACT and WA are taking 190/491 applications for 2026–27. Queensland is waiting on its final allocation, and Victoria and NSW have not released 2026–27 settings.",c:"States",k:1,u:"https://www.widen.com.au/state-nomination-tracker/",s:"WIDEN"},
+ {d:"2026-10-02",t:"Student visa reforms take effect",b:"From 2 October 2026, most current Student visa holders applying for a further Student visa must apply from outside Australia. Family members can join only if an exception applies, and must apply at the same time and place as the main applicant.",c:"Policy",k:0,u:"https://migrationalliance.com.au/immigration-daily-news/entry/2026-10-student-visa-reforms-commence-on-2-october-2026.html",s:"Migration Alliance"},
  {d:"2026-09-19",t:"Directions 121 and 122 replace Direction 119",b:"New processing order for skilled visas. Priority sectors (construction, healthcare, teaching, agriculture, aquaculture, fishing, resources, law enforcement, defence) go first, onshore or offshore. Direction 122 covers 186, 189, 190, 191, 491 and 494. Offshore applications that include family now sit lowest.",c:"Processing",k:1,u:"https://immi.homeaffairs.gov.au/visas/getting-a-visa/visa-processing-times/visa-processing-priorities/skilled-visa",s:"Home Affairs"},
  {d:"2026-09-17",t:"Minister Burke announces migration package",b:"Housing construction trade qualifications to earn the same points as a degree for 189, 190 and 491. Most future student and 485 visa holders lose the ability to bring partners and children. Start dates for most measures aren't published yet.",c:"Policy",k:1,u:"https://www.australiamigrate.com/australian-migration-changes-september-2026/",s:"AustraliaMigrate"},
  {d:"2026-09-17",t:"Visitor visas to carry No Further Stay; working holiday ballot",b:"Future visitor visas expected to carry condition 8503, blocking most onshore applications. Second-year working holiday places capped at 45,000 and third-year at 5,000, allocated by ballot.",c:"Policy",k:0,u:"https://www.australiamigrate.com/australian-migration-changes-september-2026/",s:"AustraliaMigrate"},
