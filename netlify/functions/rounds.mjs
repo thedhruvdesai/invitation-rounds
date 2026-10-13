@@ -34,8 +34,18 @@ const toISO = (d) => {
 const cells = (line) => line.split("|").map((c) => c.trim()).filter((c) => c !== "");
 const num = (c) => (c === undefined ? null : /^<\s*5$/.test(c) ? "<5" : /^[\d,]+$/.test(c) ? Number(c.replace(/,/g, "")) : c);
 
+// SharePoint ships the page body as escaped HTML inside JSON ("block":"...")
+// and builds the DOM in the browser. Pull those blocks out as real HTML.
+export function scriptBlocks(html) {
+  const out = [];
+  for (const m of html.matchAll(/"block":"((?:[^"\\]|\\.)*)"/g)) {
+    try { out.push(JSON.parse('"' + m[1] + '"')); } catch { /* skip malformed */ }
+  }
+  return out.join("\n");
+}
+
 export function parse(html) {
-  const lines = toText(html);
+  const lines = toText(html + "\n" + scriptBlocks(html));
   const all = lines.join("\n");
   const out = { nextRound: null, current: null, programYear: null, states: null };
 
@@ -133,7 +143,8 @@ export default async () => {
       title: (html.match(/<title[^>]*>([\s\S]*?)<\/title>/i) || [])[1]?.trim().slice(0, 120) || null,
       hasRoundText: /next invitation round/i.test(html),
       sample: (() => { const i = html.indexOf("Invitations issued on"); return i < 0 ? null : html.slice(Math.max(0, i - 200), i + 400).replace(/\s+/g, " "); })(),
-      lines: toText(html).filter((l) => /Invitations issued|Actuary|Skilled Independent visa/.test(l)).slice(0, 6),
+      blocks: scriptBlocks(html).length,
+      lines: toText(html + "\n" + scriptBlocks(html)).filter((l) => /Invitations issued|Actuary|Skilled Independent visa/.test(l)).slice(0, 6),
     };
     return new Response(JSON.stringify({ ok, fetchedAt: new Date().toISOString(), source: SOURCE, ...data, diag }), {
       headers: { ...headers, "netlify-cdn-cache-control": ok ? "public, durable, s-maxage=1800, stale-while-revalidate=86400" : "public, s-maxage=300" },
