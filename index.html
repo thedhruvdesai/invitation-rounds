@@ -445,6 +445,8 @@ footer ul{gap:6px}
   .occ-row .vz{grid-row:2;grid-column:1}
   .occ-row .p{grid-row:1/3;grid-column:2;align-self:center}
 }
+
+.field .hint{font-size:12px;color:var(--muted)}
 </style>
 </head>
 <body>
@@ -503,7 +505,7 @@ footer ul{gap:6px}
         <div class="card">
           <div class="card-h"><div><h2>Check your score</h2><p class="sub">Compared with your occupation's cut-off in the <span class="js-round">4 June 2026</span> round.</p></div></div>
           <form class="checker" id="checker">
-            <div class="field"><label for="ck-occ">Nominated occupation</label><select id="ck-occ"></select></div>
+            <div class="field"><label for="ck-occ">Nominated occupation</label><select id="ck-occ"></select><span class="hint">Grouped by field. The number is the lowest score invited in the last round.</span></div>
             <div class="quick" id="quick"></div>
             <div class="field"><label id="pts-l">Your EOI points</label>
               <div class="stepper" role="group" aria-labelledby="pts-l">
@@ -635,16 +637,25 @@ const RX=[
 const GCOL={"Trades":"var(--good)","Health":"var(--accent)","Education & community":"var(--gold)","Engineering & science":"var(--bad)","Professional & other":"var(--faint)"};
 const grpOf=n=>(RX.find(r=>r[1].test(n))||["Professional & other"])[0];
 /* sector from ANZSCO code (falls back to name matching) */
-const SECTORS=["All","ICT","Engineering & science","Health","Education","Trades","Business, legal & social","Managers","Arts & media","Community & services"];
-const SCOL={"ICT":"#7C6CF2","Engineering & science":"var(--bad)","Health":"var(--accent)","Education":"var(--gold)","Trades":"var(--good)","Business, legal & social":"#C2569B","Managers":"#5A7FA8","Arts & media":"#D9822B","Community & services":"var(--faint)"};
+const SECTORS=["All","IT & computing","Engineering & science","Medical & health","Teaching","Construction trades","Electrical trades","Automotive & metal trades","Other trades","Business, legal & social","Managers","Arts & media","Community & services"];
+const SCOL={"IT & computing":"#7C6CF2","Engineering & science":"var(--bad)","Medical & health":"var(--accent)","Teaching":"var(--gold)","Construction trades":"var(--good)","Electrical trades":"#2E9C8F","Automotive & metal trades":"#6E8B3D","Other trades":"#8A7A5A","Business, legal & social":"#C2569B","Managers":"#5A7FA8","Arts & media":"#D9822B","Community & services":"var(--faint)"};
 const secOf=(c,n)=>{
-  if(!c){const g=grpOf(n);return {"Trades":"Trades","Health":"Health","Education & community":"Education","Engineering & science":/Multimedia/.test(n)?"ICT":"Engineering & science"}[g]||"Business, legal & social"}
+  if(!c){
+    if(/Multimedia|ICT|Software|Developer|Programmer|Network|Database|Cyber|Systems Analyst/i.test(n))return'IT & computing';
+    if(/Electrician|Electronic|Electrical|Telecommunications (Lines|Technician|Cabler)|Lift/i.test(n))return'Electrical trades';
+    if(/Plumber|Carpenter|Joiner|Bricklayer|Drainer|Plasterer|Glazier|Stonemason|Tiler|Gasfitter|Roof|Painting/i.test(n))return'Construction trades';
+    if(/Mechanic|Fitter|Welder|Metal|Sheetmetal|Panelbeater|Boat|Shipwright|Automotive/i.test(n))return'Automotive & metal trades';
+    const g=grpOf(n);return {"Trades":"Other trades","Health":"Medical & health","Education & community":"Teaching","Engineering & science":"Engineering & science"}[g]||"Business, legal & social";
+  }
   const a=c[0],ab=c.slice(0,2),abc=c.slice(0,3);
-  if(ab==='26'||abc==='313')return'ICT';
-  if(ab==='25'||abc==='411')return'Health';
-  if(ab==='24')return'Education';
+  if(ab==='26'||abc==='313')return'IT & computing';
+  if(ab==='25'||abc==='411')return'Medical & health';
+  if(ab==='24')return'Teaching';
   if(ab==='23'||ab==='31')return'Engineering & science';
-  if(a==='3')return'Trades';
+  if(ab==='33')return'Construction trades';
+  if(ab==='34')return'Electrical trades';
+  if(ab==='32')return'Automotive & metal trades';
+  if(a==='3')return'Other trades';
   if(a==='1')return'Managers';
   if(ab==='21')return'Arts & media';
   if(ab==='22'||ab==='27')return'Business, legal & social';
@@ -733,12 +744,20 @@ const sel=document.getElementById('ck-occ');
 const monLong=()=>fmtD(ROUND.iso,true).split(' ')[1];
 function fillSelect(){
   const keep=sel.value||"Registered Nurse (Medical)";
-  const names=new Map(OCC.map(o=>[o.n.toLowerCase(),o.n]));
-  if(ALL)ALL.filter(o=>o.v.includes('189')).forEach(o=>{if(!names.has(o.n.toLowerCase()))names.set(o.n.toLowerCase(),o.n)});
-  const list=[...names.values()].sort((a,b)=>a.localeCompare(b));
-  sel.innerHTML=`<option value="">${ALL?'My occupation isn\'t on the 189 list':`Not on the ${monLong()} list`}</option>`+list.map(n=>`<option value="${esc(n)}">${esc(n)}</option>`).join('');
-  const k=list.find(n=>n.toLowerCase()===keep.toLowerCase());
-  sel.value=k||"";
+  const inv=new Map(OCC.map(o=>[o.n.toLowerCase(),o.p]));
+  const items=new Map(OCC.map(o=>[o.n.toLowerCase(),{n:o.n,c:''}]));
+  if(ALL)ALL.filter(o=>o.v.includes('189')).forEach(o=>items.set(o.n.toLowerCase(),{n:o.n,c:o.c}));
+  const groups=new Map(SECTORS.slice(1).map(g=>[g,[]]));
+  items.forEach(o=>{const g=secOf(o.c,o.n);(groups.get(g)||groups.set(g,[]).get(g)).push(o)});
+  let html=`<option value="">${ALL?'My occupation isn\'t on the 189 list':`Not on the ${monLong()} list`}</option>`;
+  groups.forEach((list,g)=>{
+    if(!list.length)return;
+    list.sort((a,b)=>a.n.localeCompare(b.n));
+    html+=`<optgroup label="${esc(g)} (${list.length})">`+list.map(o=>{const p=inv.get(o.n.toLowerCase());return `<option value="${esc(o.n)}">${esc(o.n)}${p!=null?` · ${p}`:' · not invited'}</option>`}).join('')+'</optgroup>';
+  });
+  sel.innerHTML=html;
+  const k=[...items.values()].find(o=>o.n.toLowerCase()===keep.toLowerCase());
+  sel.value=k?k.n:"";
 }
 fillSelect();
 const QUICK=[["Nurse","Registered Nurse (Medical)"],["Electrician","Electrician (General)"],["Teacher","Secondary School Teacher"],["Engineer","Telecommunications Engineer"],["Software","Software Engineer"],["Early childhood","Early Childhood (Pre-primary School) Teacher"]];
