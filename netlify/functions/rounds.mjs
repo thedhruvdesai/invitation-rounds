@@ -34,18 +34,20 @@ const toISO = (d) => {
 const cells = (line) => line.split("|").map((c) => c.trim()).filter((c) => c !== "");
 const num = (c) => (c === undefined ? null : /^<\s*5$/.test(c) ? "<5" : /^[\d,]+$/.test(c) ? Number(c.replace(/,/g, "")) : c);
 
-// SharePoint ships the page body as escaped HTML inside JSON ("block":"...")
-// and builds the DOM in the browser. Pull those blocks out as real HTML.
-export function scriptBlocks(html) {
-  const out = [];
-  for (const m of html.matchAll(/"block":"((?:[^"\\]|\\.)*)"/g)) {
-    try { out.push(JSON.parse('"' + m[1] + '"')); } catch { /* skip malformed */ }
+// SharePoint ships the page body as escaped HTML inside script JSON and builds
+// the DOM in the browser. Undo the escaping (once or twice, depending on how
+// deeply it is nested) so the tables can be read like normal markup.
+export function unescapeScripts(html) {
+  let t = html.replace(/<\/?script[^>]*>/gi, " ");
+  for (let i = 0; i < 2; i++) {
+    t = t.replace(/\\+u003c/gi, "<").replace(/\\+u003e/gi, ">").replace(/\\+u0026/gi, "&").replace(/\\+u0027/gi, "'")
+      .replace(/\\+"/g, '"').replace(/\\+\//g, "/").replace(/\\+n/g, "\n").replace(/\\+t/g, " ").replace(/\\+r/g, "");
   }
-  return out.join("\n");
+  return t;
 }
 
 export function parse(html) {
-  const lines = toText(html + "\n" + scriptBlocks(html));
+  const lines = toText(html + "\n" + unescapeScripts(html));
   const all = lines.join("\n");
   const out = { nextRound: null, current: null, programYear: null, states: null };
 
@@ -143,8 +145,7 @@ export default async () => {
       title: (html.match(/<title[^>]*>([\s\S]*?)<\/title>/i) || [])[1]?.trim().slice(0, 120) || null,
       hasRoundText: /next invitation round/i.test(html),
       sample: (() => { const i = html.indexOf("Invitations issued on"); return i < 0 ? null : html.slice(Math.max(0, i - 200), i + 400).replace(/\s+/g, " "); })(),
-      blocks: scriptBlocks(html).length,
-      lines: toText(html + "\n" + scriptBlocks(html)).filter((l) => /Invitations issued|Actuary|Skilled Independent visa/.test(l)).slice(0, 6),
+      lines: toText(unescapeScripts(html)).filter((l) => /Invitations issued|Actuary|Skilled Independent visa/.test(l)).slice(0, 6),
     };
     return new Response(JSON.stringify({ ok, fetchedAt: new Date().toISOString(), source: SOURCE, ...data, diag }), {
       headers: { ...headers, "netlify-cdn-cache-control": ok ? "public, durable, s-maxage=1800, stale-while-revalidate=86400" : "public, s-maxage=300" },
