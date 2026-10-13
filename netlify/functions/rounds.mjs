@@ -7,9 +7,11 @@ const SOURCE = "https://immi.homeaffairs.gov.au/visas/working-in-australia/skill
 const MONTHS = ["January","February","March","April","May","June","July","August","September","October","November","December"];
 
 const decode = (s) => s
-  .replace(/&nbsp;|&#160;/g, " ").replace(/&amp;/g, "&").replace(/&lt;/g, "<").replace(/&gt;/g, ">")
-  .replace(/&#39;|&rsquo;|&lsquo;/g, "'").replace(/&quot;|&ldquo;|&rdquo;/g, '"').replace(/&ndash;|&#8211;/g, "–")
-  .replace(/[​ ]/g, " ");
+  .replace(/&#(\d+);/g, (_, n) => String.fromCodePoint(Number(n)))
+  .replace(/&#x([0-9a-f]+);/gi, (_, n) => String.fromCodePoint(parseInt(n, 16)))
+  .replace(/&nbsp;/g, " ").replace(/&amp;/g, "&").replace(/&lt;/g, "<").replace(/&gt;/g, ">")
+  .replace(/&rsquo;|&lsquo;/g, "'").replace(/&quot;|&ldquo;|&rdquo;/g, '"').replace(/&ndash;/g, "–")
+  .replace(/[\u200B-\u200D\uFEFF]/g, "").replace(/\u00A0/g, " ");
 
 // Turn the page into plain lines; table cells are separated by " | ".
 export function toText(html) {
@@ -38,13 +40,14 @@ export function parse(html) {
   const out = { nextRound: null, current: null, programYear: null, states: null };
 
   // Next round: "will be held on 15 October 2026" or "is expected to be held by 30 September 2026"
-  const nr = all.match(/next invitation round for the Skilled Independent \(subclass 189\) visa (will be held on|is expected to be held by|is expected to be held on|will be held by) (\d{1,2} [A-Za-z]+ \d{4})/i);
+  const scriptText = decode(html.replace(/\\u003c/gi, "<").replace(/\\u003e/gi, ">").replace(/\\u0026/gi, "&").replace(/<[^>]+>/g, " ")).replace(/\s+/g, " ");
+  const nr = (all.replace(/\n/g, " ") + " " + scriptText).match(/next invitation round for the Skilled Independent \(subclass 189\) visa (will be held on|is expected to be held by|is expected to be held on|will be held by) (\d{1,2} [A-Za-z]+ \d{4})/i);
   if (nr) out.nextRound = { date: toISO(nr[2]), label: nr[2], firm: /will be held on|expected to be held on/i.test(nr[1]), wording: nr[0] };
 
   // Current round summary
-  const ci = lines.findIndex((l) => /^Invitations issued on \d{1,2} [A-Za-z]+ \d{4}$/.test(l));
+  const ci = lines.findIndex((l) => /Invitations issued on \d{1,2} [A-Za-z]+ \d{4}/.test(l) && !/occupation/i.test(l));
   if (ci >= 0) {
-    const label = lines[ci].replace("Invitations issued on ", "");
+    const label = lines[ci].match(/Invitations issued on (\d{1,2} [A-Za-z]+ \d{4})/)[1];
     const cur = { date: toISO(label), label, invited189: null, invited491: null, tieBreak189: null, occupations: [] };
     for (let i = ci + 1; i < Math.min(ci + 15, lines.length); i++) {
       const c = cells(lines[i]);
@@ -52,7 +55,7 @@ export function parse(html) {
       if (/^Skilled Work Regional.*Family Sponsored$/.test(c[0]) && c.length >= 2) { cur.invited491 = num(c[1]); }
     }
     // Occupation table follows "Invitations issued by occupation and minimum score invited"
-    const oi = lines.findIndex((l, i) => i > ci && /^Invitations issued by occupation/i.test(l));
+    const oi = lines.findIndex((l, i) => i > ci && /Invitations issued by occupation/i.test(l));
     if (oi >= 0) {
       for (let i = oi + 1; i < lines.length; i++) {
         if (/Results could indicate|^Total invitations issued/i.test(lines[i])) break;
@@ -66,7 +69,7 @@ export function parse(html) {
   }
 
   // Invitations per month in the current program year
-  const pi = lines.findIndex((l) => /^Total invitations issued during \d{4}-\d{2} program year$/i.test(l));
+  const pi = lines.findIndex((l) => /Total invitations issued during \d{4}-\d{2} program year/i.test(l));
   if (pi >= 0) {
     const py = { label: lines[pi].match(/\d{4}-\d{2}/)[0], months: [], s189: null, f491: null };
     for (let i = pi + 1; i < Math.min(pi + 10, lines.length); i++) {
@@ -129,7 +132,8 @@ export default async () => {
       status: res.status, bytes: html.length,
       title: (html.match(/<title[^>]*>([\s\S]*?)<\/title>/i) || [])[1]?.trim().slice(0, 120) || null,
       hasRoundText: /next invitation round/i.test(html),
-      head: html.replace(/\s+/g, " ").slice(0, 300),
+      sample: (() => { const i = html.indexOf("Invitations issued on"); return i < 0 ? null : html.slice(Math.max(0, i - 200), i + 400).replace(/\s+/g, " "); })(),
+      lines: toText(html).filter((l) => /Invitations issued|Actuary|Skilled Independent visa/.test(l)).slice(0, 6),
     };
     return new Response(JSON.stringify({ ok, fetchedAt: new Date().toISOString(), source: SOURCE, ...data, diag }), {
       headers: { ...headers, "netlify-cdn-cache-control": ok ? "public, durable, s-maxage=1800, stale-while-revalidate=86400" : "public, s-maxage=300" },
