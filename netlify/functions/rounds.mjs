@@ -121,9 +121,17 @@ export default async () => {
     });
     clearTimeout(t);
     if (!res.ok) throw new Error(`Home Affairs responded ${res.status}`);
-    const data = parse(await res.text());
+    const html = await res.text();
+    const data = parse(html);
     const ok = !!(data.current && data.current.date && data.current.occupations.length >= 20);
-    return new Response(JSON.stringify({ ok, fetchedAt: new Date().toISOString(), source: SOURCE, ...data }), {
+    // When parsing fails, report what came back so it can be diagnosed.
+    const diag = ok ? undefined : {
+      status: res.status, bytes: html.length,
+      title: (html.match(/<title[^>]*>([\s\S]*?)<\/title>/i) || [])[1]?.trim().slice(0, 120) || null,
+      hasRoundText: /next invitation round/i.test(html),
+      head: html.replace(/\s+/g, " ").slice(0, 300),
+    };
+    return new Response(JSON.stringify({ ok, fetchedAt: new Date().toISOString(), source: SOURCE, ...data, diag }), {
       headers: { ...headers, "netlify-cdn-cache-control": ok ? "public, durable, s-maxage=1800, stale-while-revalidate=86400" : "public, s-maxage=300" },
     });
   } catch (err) {
