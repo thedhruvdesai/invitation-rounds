@@ -401,6 +401,50 @@ footer ul{gap:6px}
 @keyframes pulse{50%{box-shadow:0 0 0 6px transparent}}
 @media (prefers-reduced-motion:reduce){.live.is-live::before{animation:none}}
 .mtop .logo span.is-live{color:var(--good)}
+
+/* all-occupations list */
+.status-grid{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:var(--s2)}
+.sbtn{display:grid;gap:4px;text-align:left;background:var(--surface);border:1px solid var(--line);border-radius:var(--r-sm);padding:14px 16px;cursor:pointer;color:var(--ink);font:inherit;transition:border-color .15s,background .15s}
+.sbtn:hover{border-color:var(--line-2)}
+.sbtn b{font:700 24px/1 var(--display);font-stretch:82%;font-variant-numeric:tabular-nums}
+.sbtn span{font-size:12.5px;color:var(--muted);line-height:1.35}
+.sbtn i{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:6px;vertical-align:1px}
+.sbtn[aria-pressed="true"]{border-color:var(--ink);box-shadow:inset 0 0 0 1px var(--ink)}
+.status-grid{margin-bottom:var(--s3)}
+@media (max-width:900px){
+  .status-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:var(--s1)}
+  .sbtn{grid-template-columns:auto 1fr;align-items:center;gap:8px;padding:9px 12px}
+  .sbtn b{font-size:18px}
+  .sbtn span{font-size:12px}
+  .sbtn i{display:none}
+  .status-grid .sbtn:first-child{grid-column:1/-1}
+}
+@media (max-width:640px){
+  .occ-scroll{max-height:none;overflow:visible}
+  #chips{flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none;margin-inline:calc(-1 * var(--pad));padding-inline:var(--pad);padding-bottom:2px}
+  #chips::-webkit-scrollbar{display:none}
+  #chips .chip{flex:none}
+}
+.occ-head,.occ-row{grid-template-columns:minmax(0,1fr) 150px 128px}
+.occ-row .nm{display:grid;gap:3px;min-width:0}
+.occ-row .nm b{font-weight:600}
+.occ-row .meta{display:flex;flex-wrap:wrap;gap:4px 8px;font:500 12px var(--mono);color:var(--muted)}
+.occ-row .meta .lst{font-family:var(--body);font-weight:600;font-size:11px;letter-spacing:.04em}
+.occ-row .vz{display:flex;gap:4px;flex-wrap:wrap}
+.vz span{font:600 11px var(--mono);border:1px solid var(--line-2);border-radius:5px;padding:1px 5px;color:var(--muted)}
+.vz span.on{background:var(--accent-soft);border-color:transparent;color:var(--accent)}
+.st{display:inline-block;font:600 12px var(--body);border-radius:7px;padding:4px 9px;white-space:nowrap}
+.st.inv{font-family:var(--mono)}
+.st.no{background:var(--bad-soft);color:var(--bad)}
+.st.state{background:var(--warn-soft);color:var(--warn)}
+.st.emp{background:var(--surface-2);color:var(--muted)}
+.occ-row mark{background:color-mix(in srgb,var(--gold) 30%,transparent);color:inherit;border-radius:2px}
+@media (max-width:640px){
+  .occ-row{grid-template-columns:minmax(0,1fr) auto;gap:8px 12px}
+  .occ-row .nm{grid-column:1}
+  .occ-row .vz{grid-row:2;grid-column:1}
+  .occ-row .p{grid-row:1/3;grid-column:2;align-self:center}
+}
 </style>
 </head>
 <body>
@@ -488,19 +532,20 @@ footer ul{gap:6px}
 
     <!-- OCCUPATIONS -->
     <section class="panel" id="occupations" role="tabpanel" hidden>
-      <div class="page-head"><div><div class="eyebrow">Round of <span class="js-round">4 June 2026</span></div><h1>Occupation cut-offs</h1><p>Minimum points invited per occupation for the subclass 189. Occupations missing from this list received no invitations.</p></div></div>
+      <div class="page-head"><div><div class="eyebrow">Home Affairs skilled occupation list</div><h1>All occupations</h1><p>Every occupation on the official list, with how it did in the <span class="js-round">4 June 2026</span> round. Search by name or ANZSCO code.</p></div></div>
       <div class="card">
         <div class="toolbar">
-          <div class="search"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m20 20-4-4"/></svg><input id="q" type="search" placeholder="Search, e.g. nurse, engineer, tiler" aria-label="Search occupations"></div>
-          <select id="sort" aria-label="Sort by"><option value="pts-asc">Lowest cut-off first</option><option value="pts-desc">Highest cut-off first</option><option value="az">A–Z</option></select>
+          <div class="search"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m20 20-4-4"/></svg><input id="q" type="search" placeholder="Search, e.g. software, early childhood, 261313" aria-label="Search occupations by name or ANZSCO code"></div>
+          <select id="sort" aria-label="Sort by"><option value="status">Invited first, lowest cut-off</option><option value="pts-desc">Highest cut-off first</option><option value="az">A–Z</option><option value="code">ANZSCO code</option></select>
         </div>
-        <div class="chips" id="chips"></div>
+        <div class="status-grid" id="occ-status" role="group" aria-label="Filter by status"></div>
+        <div class="chips" id="chips" role="group" aria-label="Filter by sector"></div>
         <div class="occ-list">
-          <div class="occ-head"><span>Occupation</span><span>Sector</span><span style="text-align:right">Min points</span></div>
+          <div class="occ-head"><span>Occupation</span><span>Visas</span><span style="text-align:right">Last round</span></div>
           <div class="occ-scroll" id="occ-body"></div>
         </div>
         <p class="foot-note" id="occ-count"></p>
-        <div class="callout" id="ict-note"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 8v5M12 16.5v.5"/></svg><span>ICT roles such as Software Engineer, Developer Programmer and ICT Business Analyst received no 189 invitations in this round. Multimedia Specialist and both telecommunications engineering occupations were invited at 95.</span></div>
+        <div class="callout" id="ict-note"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 8v5M12 16.5v.5"/></svg><span>Software Engineer, Developer Programmer, ICT Business Analyst and Early Childhood (Pre-primary School) Teacher are all on the 189 list but received no invitations in this round. Multimedia Specialist and both telecommunications engineering occupations were invited at 95.</span></div>
       </div>
     </section>
 
@@ -580,7 +625,7 @@ footer ul{gap:6px}
 
 <script>
 (function(){
-const RAW="Actuary|90;Agricultural Consultant|80;Agricultural Scientist|80;Airconditioning and Mechanical Services Plumber|65;Airconditioning and Refrigeration Mechanic|80;Architect|85;Arts Administrator or Manager|80;Audiologist|75;Automotive Electrician|80;Barrister|80;Biotechnologist|95;Boat Builder and Repairer|80;Bricklayer|65;Cabinetmaker|80;Cardiologist|80;Carpenter|65;Carpenter and Joiner|65;Cartographer|85;Chemist|85;Child Care Centre Manager|80;Chiropractor|80;Clinical Psychologist|75;Construction Project Manager|80;Dancer or Choreographer|80;Dermatologist|85;Diagnostic and Interventional Radiologist|85;Drainer|65;Economist|80;Electrical Engineering Draftsperson|80;Electrical Engineering Technician|80;Electrician (General)|65;Electrician (Special Class)|65;Electronic Equipment Trades Worker|80;Electronic Instrument Trades Worker (General)|80;Electronic Instrument Trades Worker (Special Class)|80;Electronics Engineer|95;Emergency Medicine Specialist|75;Endocrinologist|80;Engineering Manager|80;Environmental Consultant|80;Environmental Manager|80;Environmental Research Scientist|80;Environmental Scientists nec|80;Fibrous Plasterer|65;Fitter (General)|80;Fitter and Turner|80;Food Technologist|85;Footballer|80;Forester|80;Gasfitter|70;Gastroenterologist|85;General Practitioner|75;Geophysicist|80;Glazier|65;Hydrogeologist|80;Intensive Care Specialist|80;Joiner|65;Land Economist|80;Landscape Architect|85;Life Scientist (General)|95;Life Scientists nec|95;Lift Mechanic|80;Management Consultant|80;Marine Biologist|95;Medical Diagnostic Radiographer|80;Medical Laboratory Scientist|80;Medical Practitioners nec|75;Medical Radiation Therapist|80;Metal Fabricator|80;Metal Machinist (First Class)|85;Metallurgist|80;Meteorologist|85;Microbiologist|95;Midwife|75;Mining Engineer (excluding Petroleum)|80;Multimedia Specialist|95;Music Director|80;Musician (Instrumental)|80;Natural and Physical Science Professionals nec|80;Nuclear Medicine Technologist|80;Nurse Practitioner|80;Obstetrician and Gynaecologist|85;Occupational Therapist|75;Ophthalmologist|80;Optometrist|80;Organisational Psychologist|80;Orthopaedic Surgeon|85;Orthotist or Prosthetist|80;Osteopath|80;Other Spatial Scientist|80;Paediatrician|75;Panelbeater|80;Petroleum Engineer|80;Physicist|80;Physiotherapist|75;Plumber (General)|65;Podiatrist|75;Primary Health Organisation Manager|80;Psychiatrist|80;Psychologists nec|75;Registered Nurse (Aged Care)|75;Registered Nurse (Child and Family Health)|80;Registered Nurse (Community Health)|75;Registered Nurse (Critical Care and Emergency)|75;Registered Nurse (Developmental Disability)|80;Registered Nurse (Disability and Rehabilitation)|80;Registered Nurse (Medical Practice)|75;Registered Nurse (Medical)|75;Registered Nurse (Mental Health)|75;Registered Nurse (Paediatrics)|80;Registered Nurse (Perioperative)|75;Registered Nurse (Surgical)|75;Registered Nurses nec|75;Roof Plumber|65;Secondary School Teacher|75;Sheetmetal Trades Worker|80;Shipwright|80;Social Worker|75;Solicitor|80;Solid Plasterer|65;Sonographer|85;Special Education Teachers nec|85;Special Needs Teacher|75;Specialist Physician (General Medicine)|80;Specialist Physicians nec|80;Speech Pathologist|75;Statistician|90;Stonemason|65;Surgeon (General)|85;Surveyor|80;Telecommunications Engineer|95;Telecommunications Network Engineer|95;Tennis Coach|80;Thoracic Medicine Specialist|95;Urologist|100;Valuer|80;Veterinarian|80;Wall and Floor Tiler|65;Welder (First Class)|80;Welfare Centre Manager|85";
+const RAW="Actuary|90;Agricultural Consultant|80;Agricultural Scientist|80;Airconditioning and Mechanical Services Plumber|65;Airconditioning and Refrigeration Mechanic|80;Architect|85;Arts Administrator or Manager|80;Audiologist|75;Automotive Electrician|80;Barrister|80;Biotechnologist|95;Boat Builder and Repairer|80;Bricklayer|65;Cabinetmaker|80;Cardiologist|80;Carpenter|65;Carpenter and Joiner|65;Cartographer|85;Chemist|85;Child Care Centre Manager|80;Chiropractor|80;Clinical Psychologist|75;Construction Project Manager|80;Dancer or Choreographer|80;Dermatologist|85;Diagnostic and Interventional Radiologist|85;Drainer|65;Economist|80;Electrical Engineering Draftsperson|80;Electrical Engineering Technician|80;Electrician (General)|65;Electrician (Special Class)|65;Electronic Equipment Trades Worker|80;Electronic Instrument Trades Worker (General)|80;Electronic Instrument Trades Worker (Special Class)|80;Electronics Engineer|95;Emergency Medicine Specialist|75;Endocrinologist|80;Engineering Manager|80;Environmental Consultant|80;Environmental Manager|80;Environmental Research Scientist|80;Environmental Scientists nec|80;Fibrous Plasterer|65;Fitter (General)|80;Fitter and Turner|80;Food Technologist|85;Footballer|80;Forester|80;Gasfitter|70;Gastroenterologist|85;General Practitioner|75;Geophysicist|80;Glazier|65;Hydrogeologist|80;Intensive Care Specialist|80;Joiner|65;Land Economist|80;Landscape Architect|85;Life Scientist (General)|95;Life Scientists nec|95;Lift Mechanic|80;Management Consultant|80;Marine Biologist|95;Medical Diagnostic Radiographer|80;Medical Laboratory Scientist|80;Medical Practitioners nec|75;Medical Radiation Therapist|80;Metal Fabricator|80;Metal Machinist (First Class)|85;Metallurgist|80;Meteorologist|85;Microbiologist|95;Midwife|75;Mining Engineer (excluding Petroleum)|80;Multimedia Specialist|95;Music Director|80;Musician (Instrumental)|80;Natural and Physical Science Professionals nec|80;Nuclear Medicine Technologist|80;Nurse Practitioner|80;Obstetrician and Gynaecologist|85;Ophthalmologist|80;Optometrist|80;Organisational Psychologist|80;Orthopaedic Surgeon|85;Orthotist or Prosthetist|80;Osteopath|80;Other Spatial Scientist|80;Paediatrician|75;Panelbeater|80;Petroleum Engineer|80;Physicist|80;Physiotherapist|75;Plumber (General)|65;Podiatrist|75;Primary Health Organisation Manager|80;Psychiatrist|80;Psychologists nec|75;Registered Nurse (Aged Care)|75;Registered Nurse (Child and Family Health)|80;Registered Nurse (Community Health)|75;Registered Nurse (Critical Care and Emergency)|75;Registered Nurse (Developmental Disability)|80;Registered Nurse (Disability and Rehabilitation)|80;Registered Nurse (Medical Practice)|75;Registered Nurse (Medical)|75;Registered Nurse (Mental Health)|75;Registered Nurse (Paediatrics)|80;Registered Nurse (Perioperative)|75;Registered Nurse (Surgical)|75;Registered Nurses nec|75;Roof Plumber|65;Secondary School Teacher|75;Sheetmetal Trades Worker|80;Shipwright|80;Social Worker|75;Solicitor|80;Solid Plasterer|65;Sonographer|85;Special Education Teachers nec|85;Special Needs Teacher|75;Specialist Physician (General Medicine)|80;Specialist Physicians nec|80;Speech Pathologist|75;Statistician|90;Stonemason|65;Surgeon (General)|85;Surveyor|80;Telecommunications Engineer|95;Telecommunications Network Engineer|95;Tennis Coach|80;Thoracic Medicine Specialist|95;Urologist|100;Valuer|80;Veterinarian|80;Wall and Floor Tiler|65;Welder (First Class)|80;Welfare Centre Manager|85";
 const RX=[
  ["Trades",/Plumber|Electrician|Carpenter|Joiner|Bricklayer|Drainer|Plasterer|Glazier|Stonemason|Tiler|Gasfitter|Mechanic|Fitter|Welder|Metal|Sheetmetal|Panelbeater|Cabinetmaker|Boat|Shipwright|Trades Worker/],
  ["Health",/Nurse|Midwife|Medic|Physician|Surgeon|Practitioner|Cardiolog|Dermatolog|Radiolog|Gastro|Endocrin|Urolog|Ophthalm|Paediatric|Psychiatr|Obstetric|Intensive|Thoracic|Audiolog|Chiropract|Osteopath|Optometr|Orthotist|Physiotherap|Podiatr|Occupational Therap|Speech|Sonograph|Radiograph|Radiation|Nuclear|Psycholog|Primary Health|Veterinar/],
@@ -589,6 +634,31 @@ const RX=[
 ];
 const GCOL={"Trades":"var(--good)","Health":"var(--accent)","Education & community":"var(--gold)","Engineering & science":"var(--bad)","Professional & other":"var(--faint)"};
 const grpOf=n=>(RX.find(r=>r[1].test(n))||["Professional & other"])[0];
+/* sector from ANZSCO code (falls back to name matching) */
+const SECTORS=["All","ICT","Engineering & science","Health","Education","Trades","Business, legal & social","Managers","Arts & media","Community & services"];
+const SCOL={"ICT":"#7C6CF2","Engineering & science":"var(--bad)","Health":"var(--accent)","Education":"var(--gold)","Trades":"var(--good)","Business, legal & social":"#C2569B","Managers":"#5A7FA8","Arts & media":"#D9822B","Community & services":"var(--faint)"};
+const secOf=(c,n)=>{
+  if(!c){const g=grpOf(n);return {"Trades":"Trades","Health":"Health","Education & community":"Education","Engineering & science":/Multimedia/.test(n)?"ICT":"Engineering & science"}[g]||"Business, legal & social"}
+  const a=c[0],ab=c.slice(0,2),abc=c.slice(0,3);
+  if(ab==='26'||abc==='313')return'ICT';
+  if(ab==='25'||abc==='411')return'Health';
+  if(ab==='24')return'Education';
+  if(ab==='23'||ab==='31')return'Engineering & science';
+  if(a==='3')return'Trades';
+  if(a==='1')return'Managers';
+  if(ab==='21')return'Arts & media';
+  if(ab==='22'||ab==='27')return'Business, legal & social';
+  return'Community & services';
+};
+/* the full official list (loaded from /api/occupations); null until it arrives */
+let ALL=null,ALL_AT=null;
+const STATUS=[
+  ["all","All occupations","var(--ink)"],
+  ["inv","Invited last round","var(--good)"],
+  ["no","On 189 list, not invited","var(--bad)"],
+  ["state","State nomination only (190/491)","var(--warn)"],
+  ["emp","Employer sponsored only","var(--faint)"]
+];
 let OCC=RAW.split(";").map(s=>{const[n,p]=s.split("|");return{n,p:+p,g:grpOf(n)}});
 const MON=["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
 const fmtD=(iso,long)=>{const[y,m,d]=iso.split('-').map(Number);return long?new Date(y,m-1,d).toLocaleDateString('en-AU',{day:'numeric',month:'long',year:'numeric'}):`${d} ${MON[m-1]} ${y}`};
@@ -615,7 +685,7 @@ const I={
  states:'<path d="M12 21s-7-6.1-7-11a7 7 0 0 1 14 0c0 4.9-7 11-7 11z"/><circle cx="12" cy="10" r="2.5"/>',
  news:'<path d="M5 4h11a3 3 0 0 1 3 3v13H8a3 3 0 0 1-3-3z"/><path d="M9 9h6M9 13h6"/>'
 };
-const TABS=[["overview","Overview"],["occupations","Occupation cut-offs"],["rounds","Round history"],["program","2026–27 program"],["states","State nomination"],["news","Home Affairs updates"]];
+const TABS=[["overview","Overview"],["occupations","All occupations"],["rounds","Round history"],["program","2026–27 program"],["states","State nomination"],["news","Home Affairs updates"]];
 document.getElementById('menu').innerHTML=TABS.map(([id,l])=>`<button role="tab" data-p="${id}" aria-selected="false"><svg viewBox="0 0 24 24">${I[id]}</svg>${l}</button>`).join('');
 document.getElementById('seg').innerHTML=TABS.map(([id,l])=>`<button role="tab" data-p="${id}" aria-selected="false">${l}</button>`).join('');
 const btns=[...document.querySelectorAll('[role=tab]')];
@@ -663,11 +733,15 @@ const sel=document.getElementById('ck-occ');
 const monLong=()=>fmtD(ROUND.iso,true).split(' ')[1];
 function fillSelect(){
   const keep=sel.value||"Registered Nurse (Medical)";
-  sel.innerHTML=`<option value="">Not on the ${monLong()} list (e.g. Software Engineer)</option>`+[...OCC].sort((a,b)=>a.n.localeCompare(b.n)).map(o=>`<option value="${esc(o.n)}">${esc(o.n)}</option>`).join('');
-  sel.value=OCC.some(o=>o.n===keep)?keep:"";
+  const names=new Map(OCC.map(o=>[o.n.toLowerCase(),o.n]));
+  if(ALL)ALL.filter(o=>o.v.includes('189')).forEach(o=>{if(!names.has(o.n.toLowerCase()))names.set(o.n.toLowerCase(),o.n)});
+  const list=[...names.values()].sort((a,b)=>a.localeCompare(b));
+  sel.innerHTML=`<option value="">${ALL?'My occupation isn\'t on the 189 list':`Not on the ${monLong()} list`}</option>`+list.map(n=>`<option value="${esc(n)}">${esc(n)}</option>`).join('');
+  const k=list.find(n=>n.toLowerCase()===keep.toLowerCase());
+  sel.value=k||"";
 }
 fillSelect();
-const QUICK=[["Nurse","Registered Nurse (Medical)"],["Electrician","Electrician (General)"],["Teacher","Secondary School Teacher"],["Engineer","Telecommunications Engineer"],["Software","" ]];
+const QUICK=[["Nurse","Registered Nurse (Medical)"],["Electrician","Electrician (General)"],["Teacher","Secondary School Teacher"],["Engineer","Telecommunications Engineer"],["Software","Software Engineer"],["Early childhood","Early Childhood (Pre-primary School) Teacher"]];
 const qk=document.getElementById('quick');
 qk.innerHTML=QUICK.map(([l,v])=>`<button type="button" class="chip" data-v="${esc(v)}">${l}</button>`).join('');
 qk.addEventListener('click',e=>{const b=e.target.closest('.chip');if(!b)return;sel.value=b.dataset.v;check()});
@@ -679,12 +753,14 @@ document.getElementById('checker').addEventListener('submit',e=>e.preventDefault
 const pct=v=>((v-65)/(120-65))*100;
 function check(){
   out.textContent=pts;
-  const o=OCC.find(x=>x.n===sel.value),v=document.getElementById('verdict');
+  const o=OCC.find(x=>x.n.toLowerCase()===sel.value.toLowerCase()),v=document.getElementById('verdict');
   const fill=document.getElementById('m-fill'),tick=document.getElementById('m-tick'),ml=document.getElementById('m-lab');
   fill.style.width=pct(pts)+'%';
-  qk.querySelectorAll('.chip').forEach(c=>c.setAttribute('aria-pressed',c.dataset.v===sel.value));
+  qk.querySelectorAll('.chip').forEach(c=>c.setAttribute('aria-pressed',c.dataset.v.toLowerCase()===sel.value.toLowerCase()));
+  if(!sel.value){tick.hidden=true;ml.textContent='no cut-off';fill.style.background='var(--bad)';
+    v.innerHTML=`<div class="verdict bad"><strong>Not on the 189 occupation list</strong><p>Only occupations on the MLTSSL can be invited for the subclass 189. Look at state nomination (190 or 491) or employer sponsorship, and check your occupation on the All occupations tab.</p></div>`;return}
   if(!o){tick.hidden=true;ml.textContent='no cut-off';fill.style.background='var(--bad)';
-    v.innerHTML=`<div class="verdict bad"><strong>No 189 invitations last round</strong><p>This occupation wasn't invited at any score in the ${fmtD(ROUND.iso,true)} round. State nomination (190 or 491) or employer sponsorship is the more realistic route for now.</p></div>`;return}
+    v.innerHTML=`<div class="verdict bad"><strong>No 189 invitations last round</strong><p>${esc(sel.value)} is on the 189 list but wasn't invited at any score in the ${fmtD(ROUND.iso,true)} round. State nomination (190 or 491) or employer sponsorship is the more realistic route for now.</p></div>`;return}
   tick.hidden=false;tick.style.left=`calc(${pct(o.p)}% - 1px)`;ml.textContent='cut-off '+o.p;
   const d=pts-o.p;
   const [c,h,t]= d>=5?["good","Above the last cut-off",`You're ${d} points over the ${monLong()} cut-off of ${o.p} for ${o.n}.`]
@@ -709,21 +785,50 @@ function drawHisto(){
 drawHisto();
 
 /* occupations */
-let grp="All";
-const chips=document.getElementById('chips');
-function renderChips(){chips.innerHTML=GROUPS.map(g=>`<button type="button" class="chip" aria-pressed="${g===grp}" data-g="${g}">${g}<span class="mono">${g==='All'?OCC.length:OCC.filter(o=>o.g===g).length}</span></button>`).join('')}
-renderChips();
-chips.addEventListener('click',e=>{const b=e.target.closest('.chip');if(!b)return;grp=b.dataset.g;chips.querySelectorAll('.chip').forEach(x=>x.setAttribute('aria-pressed',x===b));renderOcc()});
+let grp="All",stat="all";
+const chips=document.getElementById('chips'),statBox=document.getElementById('occ-status');
+function rowsAll(){
+  const inv=new Map(OCC.map(o=>[o.n.toLowerCase(),o.p]));
+  let list;
+  if(ALL){
+    const seen=new Set();
+    list=ALL.map(o=>{const k=o.n.toLowerCase();seen.add(k);return{...o,p:inv.get(k)}});
+    OCC.forEach(o=>{if(!seen.has(o.n.toLowerCase()))list.push({n:o.n,c:'',l:[],v:['189'],a:[],p:o.p})});
+  }else list=OCC.map(o=>({n:o.n,c:'',l:[],v:['189'],a:[],p:o.p}));
+  return list.map(o=>({...o,sec:secOf(o.c,o.n),st:o.p!=null?'inv':o.v.includes('189')?'no':(o.v.includes('190')||o.v.includes('491'))?'state':'emp'}));
+}
+function renderChips(){
+  const rows=rowsAll();
+  const inStat=rows.filter(o=>stat==='all'||o.st===stat);
+  chips.innerHTML=SECTORS.map(g=>{const n=g==='All'?inStat.length:inStat.filter(o=>o.sec===g).length;return n||g==='All'?`<button type="button" class="chip" aria-pressed="${g===grp}" data-g="${g}">${g}<span class="mono">${n}</span></button>`:''}).join('');
+  statBox.innerHTML=STATUS.map(([k,l,c])=>{const n=k==='all'?rows.length:rows.filter(o=>o.st===k).length;return `<button type="button" class="sbtn" aria-pressed="${k===stat}" data-s="${k}"><b>${n}</b><span><i style="background:${c}"></i>${l}</span></button>`}).join('');
+}
+chips.addEventListener('click',e=>{const b=e.target.closest('.chip');if(!b)return;grp=b.dataset.g;renderChips();renderOcc()});
+statBox.addEventListener('click',e=>{const b=e.target.closest('.sbtn');if(!b)return;stat=b.dataset.s;if(grp!=='All'){grp='All'}renderChips();renderOcc()});
+const hl=(t,q)=>{if(!q)return esc(t);const i=t.toLowerCase().indexOf(q);return i<0?esc(t):esc(t.slice(0,i))+'<mark>'+esc(t.slice(i,i+q.length))+'</mark>'+esc(t.slice(i+q.length))};
+const ORDER={inv:0,no:1,state:2,emp:3};
 function renderOcc(){
   const q=document.getElementById('q').value.trim().toLowerCase(),s=document.getElementById('sort').value;
-  const rows=OCC.filter(o=>(grp==='All'||o.g===grp)&&o.n.toLowerCase().includes(q));
-  rows.sort(s==='az'?(a,b)=>a.n.localeCompare(b.n):s==='pts-desc'?(a,b)=>b.p-a.p||a.n.localeCompare(b.n):(a,b)=>a.p-b.p||a.n.localeCompare(b.n));
-  document.getElementById('occ-body').innerHTML=rows.map(o=>`<div class="occ-row"><span>${esc(o.n)}</span><span class="g"><i style="background:${GCOL[o.g]}"></i>${o.g}</span><span class="p"><span class="pts ${pillCls(o.p)}">${o.p}</span></span></div>`).join('')||'<div class="occ-row"><span class="np">No invited occupation matches. It likely received no invitations this round.</span></div>';
-  document.getElementById('occ-count').textContent=`Showing ${rows.length} of ${OCC.length} invited occupations`;
+  const all=rowsAll();
+  const rows=all.filter(o=>(stat==='all'||o.st===stat)&&(grp==='All'||o.sec===grp)&&(!q||o.n.toLowerCase().includes(q)||o.c.startsWith(q)));
+  rows.sort(s==='az'?(a,b)=>a.n.localeCompare(b.n)
+    :s==='code'?(a,b)=>(a.c||'9').localeCompare(b.c||'9')||a.n.localeCompare(b.n)
+    :s==='pts-desc'?(a,b)=>(b.p??-1)-(a.p??-1)||ORDER[a.st]-ORDER[b.st]||a.n.localeCompare(b.n)
+    :(a,b)=>ORDER[a.st]-ORDER[b.st]||(a.p??0)-(b.p??0)||a.n.localeCompare(b.n));
+  const pill=o=>o.st==='inv'?`<span class="st inv pts ${pillCls(o.p)}" title="Lowest score invited">Invited · ${o.p}</span>`
+    :o.st==='no'?'<span class="st no">Not invited</span>':o.st==='state'?'<span class="st state">190 / 491 only</span>':'<span class="st emp">Employer only</span>';
+  const VIS=['189','190','491'];
+  const LIM=1000,shown=rows.slice(0,LIM);
+  document.getElementById('occ-body').innerHTML=shown.map(o=>`<div class="occ-row"><span class="nm"><b>${hl(o.n,q)}</b><span class="meta">${o.c?`<span>${hl(o.c,q)}</span>`:''}<span class="lst">${o.l.filter(x=>x!=='RSMS ROL').join(' · ')||''}</span>${o.a&&o.a.length?`<span>${esc(o.a.join(', '))}</span>`:''}<span style="color:${SCOL[o.sec]}">● ${o.sec}</span></span></span><span class="vz">${VIS.map(v=>`<span class="${o.v.includes(v)?'on':''}" title="${o.v.includes(v)?'Eligible for':'Not eligible for'} subclass ${v}">${v}</span>`).join('')}</span><span class="p">${pill(o)}</span></div>`).join('')
+    ||`<div class="occ-row"><span class="np">No occupation on the ${ALL?'official':'invited'} list matches “${esc(q)}”. Try a shorter word or the 6-digit ANZSCO code.</span></div>`;
+  const tail=rows.length>LIM?` (first ${LIM} shown, refine your search)`:'';
+  document.getElementById('occ-count').textContent=ALL
+    ?`Showing ${rows.length} of ${all.length} occupations${tail}. Official list from Home Affairs${ALL_AT?`, fetched ${ago(ALL_AT)}`:''}. "Last round" is the ${fmtD(ROUND.iso,true)} subclass 189 round.`
+    :`Showing ${rows.length} invited occupations. The full official list is loading…`;
 }
 document.getElementById('q').addEventListener('input',renderOcc);
 document.getElementById('sort').addEventListener('change',renderOcc);
-renderOcc();
+renderChips();renderOcc();
 
 /* rounds chart & log */
 function renderRounds(){
@@ -833,6 +938,21 @@ function applyLive(d){
   if(!changed)return;
   renderPass();fillSelect();check();drawHisto();renderChips();renderOcc();renderRounds();renderStates();
 }
+/* full official occupation list: live endpoint first, then the copy shipped with the site */
+(async()=>{
+  if(location.protocol==='file:')return;
+  for(const url of ['/api/occupations','data/occupations.json']){
+    try{
+      const ctrl=new AbortController();const t=setTimeout(()=>ctrl.abort(),10000);
+      const r=await fetch(url,{signal:ctrl.signal,headers:{accept:'application/json'}});clearTimeout(t);
+      const d=await r.json();
+      if(d&&d.ok&&Array.isArray(d.occupations)&&d.occupations.length>=300){
+        ALL=d.occupations;ALL_AT=d.fetchedAt||null;renderChips();renderOcc();fillSelect();check();return;
+      }
+    }catch(e){}
+  }
+  document.getElementById('occ-count').textContent=`Showing invited occupations only. The full Home Affairs list couldn't be loaded right now.`;
+})();
 (async()=>{
   if(location.protocol==='file:'){setStatus(false);return}
   try{
