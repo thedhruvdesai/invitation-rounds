@@ -108,9 +108,15 @@ export default async () => {
     const res = await fetch(SOURCE, {
       signal: ctrl.signal,
       headers: {
-        "user-agent": "Mozilla/5.0 (compatible; InvitationRoundsTracker/1.0; +https://au-invitation-rounds.netlify.app)",
-        "accept": "text/html,application/xhtml+xml",
+        "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/129.0.0.0 Safari/537.36",
+        "accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8",
         "accept-language": "en-AU,en;q=0.9",
+        "accept-encoding": "gzip, deflate, br",
+        "upgrade-insecure-requests": "1",
+        "sec-fetch-dest": "document",
+        "sec-fetch-mode": "navigate",
+        "sec-fetch-site": "none",
+        "sec-fetch-user": "?1",
       },
     });
     clearTimeout(t);
