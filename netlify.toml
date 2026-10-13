@@ -1,0 +1,5 @@
+# Static site (no build step) plus one function that reads the official
+# Home Affairs SkillSelect page so visitors always see the latest round data.
+[build]
+  publish = "."
+  functions = "netlify/functions"

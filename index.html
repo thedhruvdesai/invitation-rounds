@@ -394,6 +394,13 @@ footer ul{gap:6px}
   .chart .val{font-size:13px}
 }
 
+
+/* live data status */
+.live.is-live::before{background:var(--good);box-shadow:0 0 0 3px var(--good-soft);animation:pulse 2.4s ease-in-out infinite}
+.live.is-saved::before{background:var(--faint);box-shadow:0 0 0 3px var(--surface-2)}
+@keyframes pulse{50%{box-shadow:0 0 0 6px transparent}}
+@media (prefers-reduced-motion:reduce){.live.is-live::before{animation:none}}
+.mtop .logo span.is-live{color:var(--good)}
 </style>
 </head>
 <body>
@@ -406,7 +413,7 @@ footer ul{gap:6px}
     </div>
     <nav class="menu" role="tablist" aria-label="Sections" id="menu"></nav>
     <div class="side-foot">
-      <span class="live">Data checked 12 Oct 2026</span>
+      <span class="live" id="live-side">Data checked 12 Oct 2026</span>
       <span>Refreshes every Monday</span>
     </div>
   </aside>
@@ -416,7 +423,7 @@ footer ul{gap:6px}
       <div class="row">
         <div class="logo">
           <div class="logo-mark"><svg viewBox="0 0 24 24" fill="none" stroke="#E7AE48" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12h13"/><path d="m12 7 5 5-5 5"/><path d="M20 4v16"/></svg></div>
-          <div><b>Invitation Rounds</b><span>Checked 12 Oct 2026</span></div>
+          <div><b>Invitation Rounds</b><span id="live-top">Checked 12 Oct 2026</span></div>
         </div>
       </div>
       <div class="seg" role="tablist" aria-label="Sections" id="seg"></div>
@@ -430,15 +437,15 @@ footer ul{gap:6px}
 
       <div class="pass">
         <div class="pass-main">
-          <div class="pass-top"><span class="eyebrow">Next invitation round · Subclass 189</span><span class="badge">Set for 15 Oct 2026</span></div>
+          <div class="pass-top"><span class="eyebrow">Next invitation round · Subclass 189</span><span class="badge" id="pass-badge">Set for 15 Oct 2026</span></div>
           <div class="route"><span class="code">EOI</span><span class="arrow" aria-hidden="true"></span><span class="code">ITA</span></div>
           <div class="count"><span class="n" id="cd-n">—</span><span class="u" id="cd-u">days to go</span></div>
           <p id="cd-text">First round of the 2026–27 program year. No round ran in September; Home Affairs now says it will be held on 15 October. Make sure your EOI is up to date before then.</p>
           <div class="pass-fields">
-            <div><span class="eyebrow">Last round</span><b>04 JUN 26</b></div>
-            <div><span class="eyebrow">Invited</span><b>10,000</b></div>
-            <div><span class="eyebrow">Cut-offs</span><b>65–100</b></div>
-            <div><span class="eyebrow">Tie-break</span><b>24 APR 26</b></div>
+            <div><span class="eyebrow">Last round</span><b id="pf-last">04 JUN 26</b></div>
+            <div><span class="eyebrow">Invited</span><b id="pf-inv">10,000</b></div>
+            <div><span class="eyebrow">Cut-offs</span><b id="pf-cut">65–100</b></div>
+            <div><span class="eyebrow">Tie-break</span><b id="pf-tie">24 APR 26</b></div>
           </div>
         </div>
         <div class="stub">
@@ -450,7 +457,7 @@ footer ul{gap:6px}
 
       <div class="grid2">
         <div class="card">
-          <div class="card-h"><div><h2>Check your score</h2><p class="sub">Compared with your occupation's cut-off in the 4 June 2026 round.</p></div></div>
+          <div class="card-h"><div><h2>Check your score</h2><p class="sub">Compared with your occupation's cut-off in the <span class="js-round">4 June 2026</span> round.</p></div></div>
           <form class="checker" id="checker">
             <div class="field"><label for="ck-occ">Nominated occupation</label><select id="ck-occ"></select></div>
             <div class="quick" id="quick"></div>
@@ -467,7 +474,7 @@ footer ul{gap:6px}
           </form>
         </div>
         <div class="card">
-          <div class="card-h"><div><h2>Where cut-offs landed</h2><p class="sub">Occupations invited at each minimum score, 4 June 2026.</p></div></div>
+          <div class="card-h"><div><h2>Where cut-offs landed</h2><p class="sub">Occupations invited at each minimum score, <span class="js-round">4 June 2026</span>.</p></div></div>
           <svg class="chart" id="histo" viewBox="0 0 420 230" role="img" aria-label="Number of occupations invited at each minimum points score"></svg>
           <div class="legend"><span><i style="background:var(--gold)"></i>Most common cut-off</span><span><i style="background:var(--accent)"></i>Other scores</span></div>
         </div>
@@ -481,7 +488,7 @@ footer ul{gap:6px}
 
     <!-- OCCUPATIONS -->
     <section class="panel" id="occupations" role="tabpanel" hidden>
-      <div class="page-head"><div><div class="eyebrow">Round of 4 June 2026</div><h1>Occupation cut-offs</h1><p>Minimum points invited per occupation for the subclass 189. Occupations missing from this list received no invitations.</p></div></div>
+      <div class="page-head"><div><div class="eyebrow">Round of <span class="js-round">4 June 2026</span></div><h1>Occupation cut-offs</h1><p>Minimum points invited per occupation for the subclass 189. Occupations missing from this list received no invitations.</p></div></div>
       <div class="card">
         <div class="toolbar">
           <div class="search"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m20 20-4-4"/></svg><input id="q" type="search" placeholder="Search, e.g. nurse, engineer, tiler" aria-label="Search occupations"></div>
@@ -493,7 +500,7 @@ footer ul{gap:6px}
           <div class="occ-scroll" id="occ-body"></div>
         </div>
         <p class="foot-note" id="occ-count"></p>
-        <div class="callout"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 8v5M12 16.5v.5"/></svg><span>ICT roles such as Software Engineer, Developer Programmer and ICT Business Analyst received no 189 invitations in this round. Multimedia Specialist and both telecommunications engineering occupations were invited at 95.</span></div>
+        <div class="callout" id="ict-note"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 8v5M12 16.5v.5"/></svg><span>ICT roles such as Software Engineer, Developer Programmer and ICT Business Analyst received no 189 invitations in this round. Multimedia Specialist and both telecommunications engineering occupations were invited at 95.</span></div>
       </div>
     </section>
 
@@ -507,14 +514,7 @@ footer ul{gap:6px}
       </div>
       <div class="card">
         <div class="card-h"><div><h2>Round log</h2></div></div>
-        <div class="rlist">
-          <div class="rhead"><span>Round</span><span>Program year</span><span>189 invited</span><span>491 family</span><span>Min points</span><span>Tie-break</span></div>
-          <div class="rrow next"><span class="when">15 Oct 2026<small>Scheduled</small></span><span class="yr">2026–27</span><span class="f np"><span class="k">189 invited</span>pending</span><span class="f np"><span class="k">491 family</span>pending</span><span class="f np"><span class="k">Min points</span>pending</span><span class="f np"><span class="k">Tie-break</span>pending</span></div>
-          <div class="rrow"><span class="when">4 Jun 2026<small>2025–26</small></span><span class="yr">2025–26</span><span class="f"><span class="k">189 invited</span>10,000</span><span class="f np"><span class="k">491 family</span>not published</span><span class="f"><span class="k">Min points</span>65–100</span><span class="f"><span class="k">Tie-break</span>24 Apr 2026</span></div>
-          <div class="rrow"><span class="when">13 Nov 2025<small>2025–26</small></span><span class="yr">2025–26</span><span class="f np"><span class="k">189 invited</span>not published</span><span class="f"><span class="k">491 family</span>—</span><span class="f"><span class="k">Min points</span>65–100</span><span class="f"><span class="k">Tie-break</span>—</span></div>
-          <div class="rrow"><span class="when">21 Aug 2025<small>2025–26</small></span><span class="yr">2025–26</span><span class="f"><span class="k">189 invited</span>6,887</span><span class="f"><span class="k">491 family</span>150</span><span class="f"><span class="k">Min points</span>65–110</span><span class="f"><span class="k">Tie-break</span>—</span></div>
-          <div class="rrow"><span class="when">7 Nov 2024<small>2024–25</small></span><span class="yr">2024–25</span><span class="f"><span class="k">189 invited</span>15,000</span><span class="f"><span class="k">491 family</span>0</span><span class="f"><span class="k">Min points</span>65</span><span class="f"><span class="k">Tie-break</span>—</span></div>
-        </div>
+        <div class="rlist" id="round-log"></div>
         <p class="foot-note">Some trackers report 10,000 invitations for 13 November 2025. The Department's own total for that round isn't confirmed here, so it shows as not published.</p>
       </div>
       <div class="card">
@@ -588,7 +588,20 @@ const RX=[
  ["Engineering & science",/Engineer|Scient|Chemist|Physicist|Biolog|Geophys|Hydrogeo|Metallurg|Meteorolog|Biotech|Agricultural|Forester|Food Tech|Surveyor|Cartograph|Environmental|Draftsperson|Technician|Architect|Statistician|Actuary|Multimedia/]
 ];
 const GCOL={"Trades":"var(--good)","Health":"var(--accent)","Education & community":"var(--gold)","Engineering & science":"var(--bad)","Professional & other":"var(--faint)"};
-const OCC=RAW.split(";").map(s=>{const[n,p]=s.split("|");const g=(RX.find(r=>r[1].test(n))||["Professional & other"])[0];return{n,p:+p,g}});
+const grpOf=n=>(RX.find(r=>r[1].test(n))||["Professional & other"])[0];
+let OCC=RAW.split(";").map(s=>{const[n,p]=s.split("|");return{n,p:+p,g:grpOf(n)}});
+const MON=["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+const fmtD=(iso,long)=>{const[y,m,d]=iso.split('-').map(Number);return long?new Date(y,m-1,d).toLocaleDateString('en-AU',{day:'numeric',month:'long',year:'numeric'}):`${d} ${MON[m-1]} ${y}`};
+const progYear=iso=>{const[y,m]=iso.split('-').map(Number);const s=m>=7?y:y-1;return `${s}–${String(s+1).slice(2)}`};
+/* Saved data (refreshed weekly). Live data from Home Affairs replaces it on load when available. */
+let ROUND={iso:"2026-06-04",invited:10000,tie:"2026-04-24"};
+let NEXT={iso:"2026-10-15",firm:true};
+let ROUNDS=[
+ {iso:"2026-06-04",inv:10000,fam:"not published",min:"65–100",tie:"24 Apr 2026"},
+ {iso:"2025-11-13",inv:null,fam:"—",min:"65–100",tie:"—"},
+ {iso:"2025-08-21",inv:6887,fam:150,min:"65–110",tie:"—"},
+ {iso:"2024-11-07",inv:15000,fam:0,min:"65",tie:"—"}
+];
 const GROUPS=["All","Trades","Health","Engineering & science","Education & community","Professional & other"];
 const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
 const pillCls=p=>p<=70?"p65":p<=80?"p75":p<=90?"p85":"p95";
@@ -619,20 +632,41 @@ let start=location.hash.slice(1);
 if(!TABS.some(t=>t[0]===start)){try{start=localStorage.getItem('ir-tab')}catch(e){start=null}}
 show(TABS.some(t=>t[0]===start)?start:'overview',false);
 
-/* countdown */
-(function(){
-  const days=Math.ceil((new Date('2026-10-15T23:59:59+10:00')-new Date())/864e5);
-  const n=document.getElementById('cd-n'),u=document.getElementById('cd-u');
+/* countdown & boarding pass */
+function renderPass(){
+  const n=document.getElementById('cd-n'),u=document.getElementById('cd-u'),tx=document.getElementById('cd-text'),badge=document.getElementById('pass-badge');
+  const cutRange=(()=>{const ps=OCC.map(o=>o.p);return ps.length?`${Math.min(...ps)}–${Math.max(...ps)}`:'—'})();
+  const [y,m,d]=ROUND.iso.split('-');
+  document.getElementById('pf-last').textContent=`${d} ${MON[+m-1].toUpperCase()} ${y.slice(2)}`;
+  document.getElementById('pf-inv').textContent=ROUND.invited==null?'n/p':Number(ROUND.invited).toLocaleString('en-AU');
+  document.getElementById('pf-cut').textContent=cutRange;
+  if(ROUND.tie){const[ty,tm,td]=ROUND.tie.split('-');document.getElementById('pf-tie').textContent=`${td} ${MON[+tm-1].toUpperCase()} ${ty.slice(2)}`}
+  document.querySelectorAll('.js-round').forEach(e=>e.textContent=fmtD(ROUND.iso,true));
+  const note=document.getElementById('ict-note');if(note)note.hidden=ROUND.iso!=='2026-06-04';
+  if(!NEXT||NEXT.iso<=ROUND.iso){
+    badge.textContent='Next round not yet announced';
+    n.textContent='New';u.textContent='round results are in';
+    tx.textContent=`The ${fmtD(ROUND.iso,true)} round invited ${ROUND.invited==null?'an unpublished number of':Number(ROUND.invited).toLocaleString('en-AU')} EOIs. Check your occupation's new cut-off below.`;
+    return;
+  }
+  badge.textContent=(NEXT.firm?'Set for ':'Expected by ')+fmtD(NEXT.iso);
+  const days=Math.floor(Date.parse(NEXT.iso+'T00:00:00Z')/864e5)-Math.floor((Date.now()+10*36e5)/864e5); // calendar days, Brisbane time
   if(days>1){n.textContent=days;u.textContent='days to go'}
   else if(days===1){n.textContent='1';u.textContent='day to go'}
-  else if(days===0){n.textContent='Today';u.textContent='is the expected date'}
-  else{n.textContent='Due';u.textContent='results pending';document.getElementById('cd-text').textContent='The expected date has passed. Results appear on the SkillSelect invitation rounds page once the Department confirms the round.'}
-})();
+  else if(days===0){n.textContent='Today';u.textContent=NEXT.firm?'is round day':'is the expected date'}
+  else{n.textContent='Due';u.textContent='results pending';tx.textContent='The round date has passed. Results appear here as soon as Home Affairs publishes them.'}
+}
+renderPass();
 
 /* checker */
 const sel=document.getElementById('ck-occ');
-sel.innerHTML='<option value="">Not on the June list (e.g. Software Engineer)</option>'+[...OCC].sort((a,b)=>a.n.localeCompare(b.n)).map(o=>`<option value="${esc(o.n)}">${esc(o.n)}</option>`).join('');
-sel.value="Registered Nurse (Medical)";
+const monLong=()=>fmtD(ROUND.iso,true).split(' ')[1];
+function fillSelect(){
+  const keep=sel.value||"Registered Nurse (Medical)";
+  sel.innerHTML=`<option value="">Not on the ${monLong()} list (e.g. Software Engineer)</option>`+[...OCC].sort((a,b)=>a.n.localeCompare(b.n)).map(o=>`<option value="${esc(o.n)}">${esc(o.n)}</option>`).join('');
+  sel.value=OCC.some(o=>o.n===keep)?keep:"";
+}
+fillSelect();
 const QUICK=[["Nurse","Registered Nurse (Medical)"],["Electrician","Electrician (General)"],["Teacher","Secondary School Teacher"],["Engineer","Telecommunications Engineer"],["Software","" ]];
 const qk=document.getElementById('quick');
 qk.innerHTML=QUICK.map(([l,v])=>`<button type="button" class="chip" data-v="${esc(v)}">${l}</button>`).join('');
@@ -650,11 +684,11 @@ function check(){
   fill.style.width=pct(pts)+'%';
   qk.querySelectorAll('.chip').forEach(c=>c.setAttribute('aria-pressed',c.dataset.v===sel.value));
   if(!o){tick.hidden=true;ml.textContent='no cut-off';fill.style.background='var(--bad)';
-    v.innerHTML=`<div class="verdict bad"><strong>No 189 invitations last round</strong><p>This occupation wasn't invited at any score in June 2026. State nomination (190 or 491) or employer sponsorship is the more realistic route for now.</p></div>`;return}
+    v.innerHTML=`<div class="verdict bad"><strong>No 189 invitations last round</strong><p>This occupation wasn't invited at any score in the ${fmtD(ROUND.iso,true)} round. State nomination (190 or 491) or employer sponsorship is the more realistic route for now.</p></div>`;return}
   tick.hidden=false;tick.style.left=`calc(${pct(o.p)}% - 1px)`;ml.textContent='cut-off '+o.p;
   const d=pts-o.p;
-  const [c,h,t]= d>=5?["good","Above the last cut-off",`You're ${d} points over the June cut-off of ${o.p} for ${o.n}.`]
-    : d===0?["warn","Right at the cut-off",`${o.n} was invited at exactly ${o.p}. At this score the tie-break decides it; in June it was a date of effect of 24 April 2026.`]
+  const [c,h,t]= d>=5?["good","Above the last cut-off",`You're ${d} points over the ${monLong()} cut-off of ${o.p} for ${o.n}.`]
+    : d===0?["warn","Right at the cut-off",`${o.n} was invited at exactly ${o.p}. At this score the tie-break decides it; in ${monLong()} it was a date of effect of ${ROUND.tie?fmtD(ROUND.tie,true):'not published'}.`]
     : ["bad","Below the last cut-off",`${o.n} was invited at ${o.p}; you need ${-d} more. Superior English, partner skills, Professional Year or NAATI can each add 5, and state nomination adds 5 (190) or 15 (491).`];
   fill.style.background=c==='good'?'var(--good)':c==='warn'?'var(--warn)':'var(--bad)';
   v.innerHTML=`<div class="verdict ${c}"><strong>${h}</strong><p>${esc(t)}</p></div>`;
@@ -662,7 +696,7 @@ function check(){
 check();
 
 /* histogram */
-(function(){
+function drawHisto(){
   const svg=document.getElementById('histo'),scores=[65,70,75,80,85,90,95,100];
   const c=scores.map(s=>OCC.filter(o=>o.p===s).length),max=Math.ceil(Math.max(...c)/10)*10;
   const L=30,R=414,T=18,B=196,bw=(R-L)/scores.length,mode=c.indexOf(Math.max(...c));let h='';
@@ -671,12 +705,14 @@ check();
     h+=`<rect class="bar${i===mode?' hi':''}" x="${x}" y="${y}" width="${w}" height="${hh}" rx="4"/><text class="val" x="${x+w/2}" y="${y-6}" text-anchor="middle">${c[i]}</text><text x="${x+w/2}" y="${B+17}" text-anchor="middle">${s}</text>`});
   h+=`<text x="${(L+R)/2}" y="228" text-anchor="middle">minimum points invited</text>`;
   svg.innerHTML=h;
-})();
+}
+drawHisto();
 
 /* occupations */
 let grp="All";
 const chips=document.getElementById('chips');
-chips.innerHTML=GROUPS.map(g=>`<button type="button" class="chip" aria-pressed="${g==='All'}" data-g="${g}">${g}<span class="mono">${g==='All'?OCC.length:OCC.filter(o=>o.g===g).length}</span></button>`).join('');
+function renderChips(){chips.innerHTML=GROUPS.map(g=>`<button type="button" class="chip" aria-pressed="${g===grp}" data-g="${g}">${g}<span class="mono">${g==='All'?OCC.length:OCC.filter(o=>o.g===g).length}</span></button>`).join('')}
+renderChips();
 chips.addEventListener('click',e=>{const b=e.target.closest('.chip');if(!b)return;grp=b.dataset.g;chips.querySelectorAll('.chip').forEach(x=>x.setAttribute('aria-pressed',x===b));renderOcc()});
 function renderOcc(){
   const q=document.getElementById('q').value.trim().toLowerCase(),s=document.getElementById('sort').value;
@@ -689,19 +725,28 @@ document.getElementById('q').addEventListener('input',renderOcc);
 document.getElementById('sort').addEventListener('change',renderOcc);
 renderOcc();
 
-/* rounds chart */
-(function(){
-  const d=[["Next round","15 Oct 2026","next"],["4 Jun 2026","2025–26",10000],["13 Nov 2025","2025–26",null],["21 Aug 2025","2025–26",6887],["7 Nov 2024","2024–25",15000]];
-  const max=16000;
-  let h=d.map(([lab,yr,v],i)=>{
+/* rounds chart & log */
+function renderRounds(){
+  const max=Math.max(16000,...ROUNDS.map(r=>r.inv||0)),step=max/4;
+  const rows=[];
+  if(NEXT&&NEXT.iso>ROUNDS[0].iso)rows.push({next:true,iso:NEXT.iso});
+  rows.push(...ROUNDS);
+  document.getElementById('rounds-chart').innerHTML=rows.map((r,i)=>{
     let bar;
-    if(v==="next")bar=`<div class="fill ghost" style="width:100%">next round</div>`;
-    else if(v===null)bar=`<span class="np-t">not published</span>`;
-    else bar=`<div class="fill${i===1?' hi':''}" style="width:${(v/max*100).toFixed(1)}%">${v.toLocaleString('en-AU')}</div>`;
-    return `<div class="rbar"><div class="l">${lab}<small>${yr}</small></div><div class="track">${bar}</div></div>`}).join('');
-  h+=`<div class="axis-row"><span></span><div class="ticks"><span>0</span><span>4k</span><span>8k</span><span>12k</span><span>16k</span></div></div>`;
-  document.getElementById('rounds-chart').innerHTML=h;
-})();
+    if(r.next)bar=`<div class="fill ghost" style="width:100%">next round</div>`;
+    else if(r.inv==null)bar=`<span class="np-t">not published</span>`;
+    else bar=`<div class="fill${r.iso===ROUNDS[0].iso?' hi':''}" style="width:${(r.inv/max*100).toFixed(1)}%">${r.inv.toLocaleString('en-AU')}</div>`;
+    return `<div class="rbar"><div class="l">${r.next?'Next round':fmtD(r.iso)}<small>${r.next?fmtD(r.iso):progYear(r.iso)}</small></div><div class="track">${bar}</div></div>`}).join('')
+    +`<div class="axis-row"><span></span><div class="ticks">${[0,1,2,3,4].map(k=>`<span>${k?Math.round(step*k/1000)+'k':0}</span>`).join('')}</div></div>`;
+  const f=(k,v)=>`<span class="f${v==='pending'||v==='not published'?' np':''}"><span class="k">${k}</span>${v==null?'not published':typeof v==='number'?v.toLocaleString('en-AU'):esc(v)}</span>`;
+  document.getElementById('round-log').innerHTML='<div class="rhead"><span>Round</span><span>Program year</span><span>189 invited</span><span>491 family</span><span>Min points</span><span>Tie-break</span></div>'+
+    rows.map(r=>r.next
+      ?`<div class="rrow next"><span class="when">${fmtD(r.iso)}<small>${NEXT.firm?'Scheduled':'Expected'}</small></span><span class="yr">${progYear(r.iso)}</span>${f('189 invited','pending')}${f('491 family','pending')}${f('Min points','pending')}${f('Tie-break','pending')}</div>`
+      :`<div class="rrow"><span class="when">${fmtD(r.iso)}<small>${progYear(r.iso)}</small></span><span class="yr">${progYear(r.iso)}</span>${f('189 invited',r.inv)}${f('491 family',r.fam)}${f('Min points',r.min)}${f('Tie-break',r.tie)}</div>`).join('');
+  const sub=document.querySelector('#rounds .card .sub');
+  if(sub)sub.textContent=NEXT&&NEXT.iso>ROUNDS[0].iso?`Newest first. The dashed bar is the round ${NEXT.firm?'set for':'expected by'} ${fmtD(NEXT.iso,true)}.`:'Newest first.';
+}
+renderRounds();
 
 /* program chart */
 (function(){
@@ -724,7 +769,9 @@ const ST=[
  ["ACT","Australian Capital Territory","open","Open","New nomination portal live since 30 Jul 2026. Allocation pending confirmation.","<5 × 190 · <5 × 491","https://www.act.gov.au/migration"],
  ["NT","Northern Territory","open","Open","1,850 places: 850 × 190 and 1,000 × 491. Opened 21 Aug 2026.","91 × 190 · 25 × 491","https://theterritory.com.au/migrate"]
 ];
-document.getElementById('state-grid').innerHTML=ST.map(s=>`<div class="state"><div class="top"><span class="code">${s[0]}</span><span class="status ${s[2]}">${s[3]}</span></div><div class="name">${s[1]}</div><p>${s[4]}</p><div class="noms"><span>Jul–Aug nominations</span><b>${esc(s[5])}</b></div><a href="${s[6]}">Official site</a></div>`).join('');
+let NOM_LABEL="Jul–Aug nominations";
+function renderStates(){document.getElementById('state-grid').innerHTML=ST.map(s=>`<div class="state"><div class="top"><span class="code">${s[0]}</span><span class="status ${s[2]}">${s[3]}</span></div><div class="name">${s[1]}</div><p>${s[4]}</p><div class="noms"><span>${NOM_LABEL}</span><b>${esc(s[5])}</b></div><a href="${s[6]}">Official site</a></div>`).join('')}
+renderStates();
 
 /* news */
 const NEWS=[
@@ -750,6 +797,52 @@ nc.innerHTML=cats.map(c=>`<button type="button" class="chip" aria-pressed="${c==
 function renderNews(){document.getElementById('feed').innerHTML=NEWS.filter(n=>cat==='All'||n.c===cat).map(item).join('')}
 nc.addEventListener('click',e=>{const b=e.target.closest('.chip');if(!b)return;cat=b.dataset.c;nc.querySelectorAll('.chip').forEach(x=>x.setAttribute('aria-pressed',x===b));renderNews()});
 renderNews();
+
+/* ---------- live data ----------
+   /api/rounds is a Netlify function that reads the official Home Affairs
+   SkillSelect page (cached ~30 min). If it can't be reached, the saved data
+   above stays on screen. */
+function ago(iso){const m=Math.max(0,Math.round((Date.now()-new Date(iso))/60000));return m<1?'just now':m<60?`${m} min ago`:m<1440?`${Math.round(m/60)} h ago`:`${Math.round(m/1440)} d ago`}
+function setStatus(live,fetchedAt){
+  const side=document.getElementById('live-side'),top=document.getElementById('live-top');
+  if(live){side.textContent=`Live from Home Affairs · ${ago(fetchedAt)}`;side.className='live is-live';top.textContent=`Live · Home Affairs, ${ago(fetchedAt)}`;top.className='is-live'}
+  else{side.classList.add('is-saved')}
+}
+function applyLive(d){
+  let changed=false;
+  if(d.nextRound&&d.nextRound.date){NEXT={iso:d.nextRound.date,firm:!!d.nextRound.firm};changed=true}
+  const c=d.current;
+  if(c&&c.date&&c.occupations&&c.occupations.length>=20){
+    const tie=c.tieBreak189&&c.tieBreak189.match(/^(\d{2})\/(\d{2})\/(\d{4})$/);
+    const tieIso=tie?`${tie[3]}-${tie[2]}-${tie[1]}`:null;
+    const ps=c.occupations.map(o=>o.p);
+    const entry={iso:c.date,inv:typeof c.invited189==='number'?c.invited189:null,fam:typeof c.invited491==='number'?c.invited491:'not published',min:`${Math.min(...ps)}–${Math.max(...ps)}`,tie:tieIso?fmtD(tieIso):'—'};
+    if(c.date>ROUNDS[0].iso)ROUNDS.unshift(entry);
+    else if(c.date===ROUNDS[0].iso)ROUNDS[0]=Object.assign(ROUNDS[0],{inv:entry.inv??ROUNDS[0].inv,tie:tieIso?entry.tie:ROUNDS[0].tie,min:entry.min});
+    ROUND={iso:c.date,invited:entry.inv,tie:tieIso};
+    OCC=c.occupations.map(o=>({n:o.n,p:o.p,g:grpOf(o.n)}));
+    changed=true;
+  }
+  if(d.states&&d.states.cols&&d.states.cols.length){
+    const key={NSW:'NSW',VIC:'Vic',QLD:'Qld',WA:'WA',SA:'SA',TAS:'Tas',ACT:'ACT',NT:'NT'};
+    const v=x=>x==null?'—':x;
+    ST.forEach(s=>{const k=key[s[0]];if(k in d.states.s190)s[5]=`${v(d.states.s190[k])} × 190 · ${v(d.states.s491[k])} × 491`});
+    if(d.states.from&&d.states.to){const short=t=>{const p=t.split(' ');return `${p[0]} ${p[1].slice(0,3)}`};NOM_LABEL=`Nominations ${short(d.states.from)} – ${short(d.states.to)}`}
+    changed=true;
+  }
+  if(!changed)return;
+  renderPass();fillSelect();check();drawHisto();renderChips();renderOcc();renderRounds();renderStates();
+}
+(async()=>{
+  if(location.protocol==='file:'){setStatus(false);return}
+  try{
+    const ctrl=new AbortController();const t=setTimeout(()=>ctrl.abort(),10000);
+    const r=await fetch('/api/rounds',{signal:ctrl.signal,headers:{accept:'application/json'}});clearTimeout(t);
+    const d=await r.json();
+    if(d&&d.ok){applyLive(d);setStatus(true,d.fetchedAt);setInterval(()=>setStatus(true,d.fetchedAt),60000)}
+    else setStatus(false);
+  }catch(e){setStatus(false)}
+})();
 })();
 </script>
 </body>
